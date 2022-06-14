@@ -12,6 +12,7 @@ module.exports = {
 
             let channel = await conn.createChannel();
 
+            // let channelConsume = await conn.createChannel();
             
 			global.RABBIT_MQ_CONNECTION = channel;
 			global.RABBIT_MQ_CONNECTION.is_alive = true;
@@ -66,6 +67,8 @@ module.exports = {
 
             let queueName = Users.getUserQueueName(id);
 
+            let consumerTag = Users.getUserConsumerTag(id);
+
             const ch = await QueueService.getChannel();
 
             await ch.assertExchange(ex, 'direct', {durable: false});
@@ -86,6 +89,8 @@ module.exports = {
                             sails.sockets.broadcast(socketId, 'update', encodemsg);
                             ch.ack(msg);
                         } else {
+                            await QueueService.cancelConsumerTag(id)
+                            ch.nack(msg);
                             console.log('Consumer cancelled by server');
                             return false;
                             // throw ResponseService.customError('Consumer cancelled by server 2');
@@ -94,14 +99,10 @@ module.exports = {
                     }
 
                 } catch (error) {
-                    if (ResponseService.isCustomError(error)) {
-                        // await ch.nack(msg);
-                        
-                        return;
-                    }
+                    console.log(error);
                 }
                 // console.log("Test");
-            }, {noAck: false});
+            }, {noAck: false, consumerTag: consumerTag});
 
             return q;
 
@@ -110,11 +111,15 @@ module.exports = {
         } 
     },
 
-    cancelQueue: async (queueId) => {
+    cancelConsumerTag: async (userId) => {
         try {
+            let consumerTag = Users.getUserConsumerTag(userId);
+
             const ch = await QueueService.getChannel();
-            console.log(`Cancel ${queueId}`)
-            await ch.cancel(queueId);
+
+            console.log(`Cancel ${consumerTag}`)
+
+            await ch.cancel(consumerTag);
 
             return true;
         } catch (error) {

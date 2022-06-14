@@ -48,7 +48,7 @@ module.exports = {
 			type: "ref",
 			columnType: "timestamp",
 			autoUpdatedAt: true,
-		},
+		}
 	},
 
 
@@ -58,5 +58,9 @@ module.exports = {
 
     getUserQueueName: (id) => {
         return `queue_user_${id}`
-    }
+    },
+
+    getUserConsumerTag: (id) => {
+        return `consumer_user_tag_${id}`
+    },
 };

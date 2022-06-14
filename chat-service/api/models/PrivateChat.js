@@ -9,32 +9,24 @@ module.exports = {
     tableName: "private_chat",
 	primaryKey: "id",
 	attributes: {
-		id: {
-			type: "number",
-			unique: true,
-			autoIncrement: true,
-		},
 		user_sent_id: {
             type: 'number'
         },
         user_recv_id: {
             type: 'number'
+        },  
+        message_type: {
+            type: 'string'
         },
         message: {
             type: 'string',
             columnType: 'text'
         },
-		createdAt: {
-			type: "ref",
-			columnType: "timestamp",
-			autoCreatedAt: true,
-		},
-		updatedAt: {
-			type: "ref",
-			columnType: "timestamp",
-			autoUpdatedAt: true,
-		}
-	}
+        message_time: {
+            type: 'ref',
+            columnType: "timestamp"
+        }
+	},
 
 }
 

@@ -1,21 +1,21 @@
-"use strict";
+'use strict';
 
 var dbm;
 var type;
 var seed;
 
 /**
- * We receive the dbmigrate dependency from dbmigrate initially.
- * This enables us to not have to rely on NODE_PATH.
- */
-exports.setup = function (options, seedLink) {
-	dbm = options.dbmigrate;
-	type = dbm.dataType;
-	seed = seedLink;
+  * We receive the dbmigrate dependency from dbmigrate initially.
+  * This enables us to not have to rely on NODE_PATH.
+  */
+exports.setup = function(options, seedLink) {
+  dbm = options.dbmigrate;
+  type = dbm.dataType;
+  seed = seedLink;
 };
 
-exports.up = function (db, callback) {
-    db.createTable('private_chat', {
+exports.up = function(db, callback) {
+    db.createTable('group_chat', {
         id: {
 			type: 'int',
 			primaryKey: true,
@@ -23,11 +23,11 @@ exports.up = function (db, callback) {
 			autoIncrement: true,
 			length: 11
 		},
-        user_sent_id: {
+        group_id: {
             type: 'int',
             length: 11
         },
-        user_recv_id: {
+        user_id: {
             type: 'int',
             length: 11
         },
@@ -49,10 +49,10 @@ exports.up = function (db, callback) {
     }, callback)
 };
 
-exports.down = function (db, callback) {
-    return db.dropTable('private_chat', callback);
+exports.down = function(db, callback) {
+    return db.dropTable('group_chat', callback);
 };
 
 exports._meta = {
-	version: 1,
+  "version": 1
 };

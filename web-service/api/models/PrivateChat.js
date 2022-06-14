@@ -9,11 +9,6 @@ module.exports = {
     tableName: "private_chat",
 	primaryKey: "id",
 	attributes: {
-		id: {
-			type: "number",
-			unique: true,
-			autoIncrement: true,
-		},
 		user_sent_id: {
             type: 'number'
         },
@@ -23,6 +18,10 @@ module.exports = {
         message: {
             type: 'string',
             columnType: 'text'
+        },
+        message_time: {
+            type: 'ref',
+            columnType: "timestamp"
         },
 		createdAt: {
 			type: "ref",

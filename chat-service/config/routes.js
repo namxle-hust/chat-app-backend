@@ -18,5 +18,11 @@ module.exports.routes = {
 
     '/generate-iwt': 'TestController.getJWT',
 
-    '/send': 'ChatController.send'
+    '/send': 'ChatController.send',
+
+    '/send-group': 'ChatController.sendGroup',
+
+    '/get-messages': 'ChatController.getMessages',
+
+    '/get-group-messages': 'ChatController.getGroupMessages'
 };

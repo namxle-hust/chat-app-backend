@@ -38,8 +38,8 @@ module.exports = {
             let message = data.message;
             let groupRecvId = data.recvId;
             let userSendId = req.user.id;
-            let msgType = req.msg_type
-            let msgTime = new Date().getTime();
+            let msgType = data.msg_type
+            let msgTime = new Date();
             
             // Message for queue
             let qmsg = JSON.stringify({
@@ -69,39 +69,6 @@ module.exports = {
         }
     },
 
-    getMessages: async (req, res) => {
-        try {
-            let userId = req.user.id;
-
-            let messages = await PrivateChat.find().where({
-                or: [{ user_recv_id: userId, user_sent_id: userId }]
-            }).sort('id DESC');
-
-
-            return ResponseService.success(res, messages);
-
-
-        } catch (error) {
-            console.log('Error-ChatController@getMessage: ', error);
-            return ResponseService.error(res);
-        }
-    },
-
-    getGroupMessages: async (req, res) => {
-        try {
-
-            let groupId = req.group_id;
-
-            let messages = await GroupChat.find({ id: groupId })
-            
-            return ResponseService.success(res, messages);
-
-        } catch (error) {
-            console.log('Error-ChatController@getGroupMessage: ', error);
-            return ResponseService.error(res);
-        }
-    },
-
     send: async (req, res) => {
         try {
 
@@ -114,8 +81,8 @@ module.exports = {
             let message = data.message;
             let userRecvId = data.recvId;
             let userSendId = req.user.id;
-            let msgType = req.msg_type
-            let msgTime = new Date().getTime();
+            let msgType = data.msg_type
+            let msgTime = new Date();
 
             let qmsg = JSON.stringify({
                 recv_id: userRecvId,

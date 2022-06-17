@@ -38,6 +38,9 @@ exports.up = function(db, callback) {
             type: 'string',
             columnType: 'text'
         },
+        message_time: {
+            type: 'timestamp'
+        },
         createdAt: {
 			type: 'timestamp',
 			defaultValue: new String('CURRENT_TIMESTAMP')

@@ -23,6 +23,9 @@ module.exports = {
             type: 'ref',
             columnType: "timestamp"
         },
+        message_type: {
+			type: "string"
+		},
 		createdAt: {
 			type: "ref",
 			columnType: "timestamp",

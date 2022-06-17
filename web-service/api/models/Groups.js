@@ -11,5 +11,8 @@ module.exports = {
 		user_id: {
 			type: "number",
 		},
+        name: {
+            type: 'string'
+        }
 	},
 };

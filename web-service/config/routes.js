@@ -11,7 +11,26 @@
 module.exports.routes = {
     '/health': 'TestController.healthCheck', 
 
-    '/subscribe': 'TestController.subscribe',
+    'POST /login': 'AuthController.login',
 
-    '/test': 'TestController.test'
+    'POST /register': 'AuthController.register',
+
+    'POST /logout': 'AuthController.logout',
+
+    'GET /users/getAll': 'UsersController.getAll',
+
+    'GET /conversations': 'ChatController.getConversations',
+
+    '/subscribe': 'TestController.subscribe',
+    
+    'GET /users/getAll': 'UsersController.getAll',
+
+    'GET /conversation/private-chat/:user_id': 'ChatController.getPrivateChat',
+
+    'GET /conversation/group/:group_id': 'ChatController.getGroupChat',
+
+    'GET /users/getUser/:id' : 'UsersController.getUser',
+    
+    '/test': 'TestController.test',
+
 };

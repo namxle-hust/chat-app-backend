@@ -17,15 +17,28 @@ module.exports = {
 
 	testRabbitMQ: async (req, res) => {
 		try {
-            await QueueService.test();
+            // await QueueService.test();
 
-            return res.json({ status: 'success' });
+            let p = await PrivateChat.create({
+
+                user_sent_id: 1,
+                user_recv_id: 2,
+                message: "Hi",
+                message_time: new Date()
+            }).fetch()
+
+            return res.json({ 
+                p: p
+            })
+            // return res.json({ status: 'success' });
 
 		} catch (error) {
 			console.log("Error-TestController@testRabbitMQ: ", error);
 			return res.json({ status: "error", message: "error" });
 		}
 	},
+
+
 
     getJWT: async (req, res) => {
         try {

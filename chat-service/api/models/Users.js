@@ -14,10 +14,7 @@ module.exports = {
 			unique: true,
 			autoIncrement: true,
 		},
-		first_name: {
-			type: "string",
-		},
-		last_name: {
+		user_name: {
 			type: "string",
 		},
 		email: {

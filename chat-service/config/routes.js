@@ -20,9 +20,5 @@ module.exports.routes = {
 
     '/send': 'ChatController.send',
 
-    '/send-group': 'ChatController.sendGroup',
-
-    '/get-messages': 'ChatController.getMessages',
-
-    '/get-group-messages': 'ChatController.getGroupMessages'
+    '/send-group': 'ChatController.sendGroup'
 };

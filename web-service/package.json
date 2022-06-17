@@ -6,7 +6,9 @@
   "keywords": [],
   "dependencies": {
     "@sailshq/lodash": "^3.10.3",
+    "bcrypt": "^5.0.1",
     "db-migrate-mysql": "^2.2.0",
+    "escape-html": "^1.0.3",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.29.3",
     "redis": "^4.1.0",

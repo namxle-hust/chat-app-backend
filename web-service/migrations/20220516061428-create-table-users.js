@@ -23,11 +23,7 @@ exports.up = function (db, callback) {
 			autoIncrement: true,
 			length: 11
 		},
-		first_name: {
-			type: 'string',
-			length: 100
-		},
-		last_name: {
+		user_name: {
 			type: 'string',
 			length: 100
 		},

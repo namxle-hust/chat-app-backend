@@ -25,6 +25,9 @@ exports.up = function (db, callback) {
 				autoIncrement: true,
 				length: 11,
 			},
+            name: {
+                type: 'string'
+            },
 			user_id: {
 				type: "int",
 				length: 11,

@@ -86,7 +86,7 @@ module.exports = {
                         
                         let socketId = await UserMappingService.getSocketId(id);
                         if (socketId) {
-                            sails.sockets.broadcast(socketId, 'update', encodemsg);
+                            sails.sockets.broadcast(socketId, 'getMessage', encodemsg);
                             ch.ack(msg);
                         } else {
                             await QueueService.cancelConsumerTag(id)

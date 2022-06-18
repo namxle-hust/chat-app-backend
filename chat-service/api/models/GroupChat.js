@@ -9,6 +9,9 @@ module.exports = {
     tableName: 'group_chat',
     primaryKey: "id",
 	attributes: {
+        group_id: {
+            type: "number"
+        },
 		user_id: {
 			type: "number"
 		},

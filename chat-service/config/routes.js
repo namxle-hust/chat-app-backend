@@ -14,6 +14,10 @@ module.exports.routes = {
 
     '/test-rabbitmq': 'TestController.testRabbitMQ',
 
+    '/test-get-keys': 'TestController.testGetAllKey',
+
+    '/test-send-message': 'TestController.testSendMessage',
+
     '/subscribe': 'ChatController.subscribe',
 
     '/generate-iwt': 'TestController.getJWT',

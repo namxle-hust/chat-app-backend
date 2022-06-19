@@ -14,10 +14,12 @@ module.exports = {
 			});
 
 			await client.connect();
-
+            
+            
 			global.USER_MAPPING_REDIS = client;
 			global.USER_MAPPING_REDIS.is_alive = true;
-
+            
+            await client.sendCommand(['flushall']);
 			// console.log(global.USER_MAPPING_REDIS);
 		} catch (error) {
 			console.log(`Error-UserMappingService@initConnection`, error);
@@ -29,7 +31,13 @@ module.exports = {
         try {
             let client = await UserMappingService.connect();
 
-            await client.sendCommand(['set', `id:${id}`, socketServer]);
+            let value = await UserMappingService.getSocketId(id);
+
+            value.push(socketServer);
+
+            value = JSON.stringify(value);
+
+            await client.sendCommand(['set', `id:${id}`, value]);
 
             return true;
 
@@ -39,12 +47,21 @@ module.exports = {
         }
     },
 
-    delete: async (id) => {
+    delete: async (id, socketId) => {
         try {
             let client = await UserMappingService.connect();
 
-            await client.sendCommand(['del', `id:${id}`]);
+            let value = await UserMappingService.getSocketId(id);
 
+            if (value.length <= 1) {
+                await client.sendCommand(['del', `id:${id}`]);
+            } else {
+                value = value.filter(sckid => sckid != socketId);
+                value = JSON.stringify(value);
+                
+                await client.sendCommand(['set', `id:${id}`, value]);
+            }
+                
             return true;
 
         } catch (error) {
@@ -57,9 +74,30 @@ module.exports = {
         try {
             let client = await UserMappingService.connect();
 
-            let socketId = await client.get(`id:${userId}`);
+            let socketIds = await client.get(`id:${userId}`);
 
-            return socketId;
+            console.log(socketIds);
+
+            if (!socketIds) {
+                return [];
+            } else {
+                return JSON.parse(socketIds);
+            }
+
+
+        } catch (error) {
+            console.log(`Error-UserMappingService@getSocketId`, error);
+            throw error;
+        }
+    },
+
+    getAllKey: async () => {
+        try {
+            let client = await UserMappingService.connect();
+
+            let keys = await client.sendCommand(['keys', `*`]);
+
+            return keys;
 
         } catch (error) {
             console.log(`Error-UserMappingService@delete`, error);

@@ -63,6 +63,15 @@ module.exports = {
 
     bindQueue: async (id) => {
         try {
+            let socketId = await UserMappingService.getSocketId(id);
+
+            // Not binding queue if user already online
+            if (socketId && socketId.length > 0) {
+                console.log("Not bind")
+                console.log(socketId)
+                return null;
+            }
+
             let key = Users.getUserQueueKey(id);
 
             let queueName = Users.getUserQueueName(id);
@@ -82,11 +91,13 @@ module.exports = {
                     if (msg !== null) {		    								
                         let encodemsg = msg.content.toString();
                         let quemsg = JSON.parse(encodemsg);
-                        console.log(quemsg);
+                        // console.log(quemsg);
                         
-                        let socketId = await UserMappingService.getSocketId(id);
-                        if (socketId) {
-                            sails.sockets.broadcast(socketId, 'getMessage', encodemsg);
+                        let socketIds = await UserMappingService.getSocketId(id);
+                        if (socketIds && socketIds.length > 0) {
+                            socketIds.forEach(sckId => {
+                                sails.sockets.broadcast(sckId, 'getMessage', quemsg);
+                            })
                             ch.ack(msg);
                         } else {
                             await QueueService.cancelConsumerTag(id)
@@ -113,13 +124,18 @@ module.exports = {
 
     cancelConsumerTag: async (userId) => {
         try {
+
             let consumerTag = Users.getUserConsumerTag(userId);
 
             const ch = await QueueService.getChannel();
 
-            console.log(`Cancel ${consumerTag}`)
+            let value = await UserMappingService.getSocketId(userId);
 
-            await ch.cancel(consumerTag);
+            if (value.length <= 1) {
+                console.log(`Cancel ${consumerTag}`)
+
+                await ch.cancel(consumerTag);
+            }
 
             return true;
         } catch (error) {

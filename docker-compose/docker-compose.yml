@@ -1,12 +1,26 @@
 version: "3.5"
 services:
+  chat-app-frontend:
+    image: namxle/chat-app-reactjs:dev
+    restart: always
+    privileged: true
+    tty: true
+    ports:
+      - "3000:3000"
+      - "8080:80"
+    volumes:
+      - ./social-app-sample/client:/app
+    container_name: chat-app-frontend
+    command: sh -c "yarn install && yarn start"
+    networks:
+      - chat-network
   web-service:
     restart: always
     privileged: true
     tty: true
     volumes:
       - ./chat-app-backend/web-service:/home/ubuntu/service
-    image: namlestudy/web-service:dev
+    image: namxle/chat-service:lastest
     ports:
       - "6001:1337"
     environment:
@@ -29,15 +43,45 @@ services:
       - session-service
     networks:
       - chat-network
+  # video-call-service:
+  #   privileged: true
+  #   restart: always
+  #   tty: true
+  #   volumes:
+  #     - ./chat-app-backend/video-call-service:/home/ubuntu/service
+  #   image: namxle/chat-service:lastest
+  #   ports:
+  #     - "6003:1337"
+  #   environment:
+  #     - NODE_ENV=dev
+  #     - MODE=DEV
+  #     - RABBIT_MQ_ADDR=rabbitmq-service:5672
+  #     - MYSQL_HOST=database
+  #     - MYSQL_ROOT_PASSWORD=root
+  #     - USER_MAPPING_ADDR=user-mapping-service:6380
+  #     - REDIS_SESSION_ADDR=session-service:6382
+  #   # healthcheck:
+  #   #   test: ["CMD-SHELL", "curl -f localhost:1337/health 2>&1 | grep healthy"]
+  #   #   interval: 30s
+  #   #   timeout: 5s
+  #   #   retries: 5
+  #   container_name: backend-video-call-service-dev
+  #   networks:
+  #     - chat-network
+  #   depends_on:
+  #     - database
+  #     - user-mapping-service
+  #     - session-service
+  #     - rabbitmq-service
   chat-service:
     privileged: true
     restart: always
     tty: true
     volumes:
       - ./chat-app-backend/chat-service:/home/ubuntu/service
-    image: namlestudy/chat-service:dev
+    image: namxle/chat-service:lastest
     ports:
-      - "6002:1337"
+      - "6003:1337"
     environment:
       - NODE_ENV=dev
       - MODE=DEV
@@ -81,7 +125,7 @@ services:
     privileged: false
     image: redis:6.2
     entrypoint: ["redis-server"]
-    command: ["--appendonly", "no", "--save", "900", "10", "--maxmemory", "1gb", "--maxmemory-policy", "allkeys-lru", "--port", "6380"]
+    command: ["--appendonly", "no", "--save", "", "--maxmemory", "1gb", "--maxmemory-policy", "allkeys-lru", "--port", "6380"]
     ports:
      - "6380:6380"
     volumes:

@@ -114,7 +114,8 @@ module.exports = {
 
             let data = {
                 chats: messages,
-                conversationName: partner.user_name
+                conversationName: partner.user_name,
+                conversationImg: partner.profile_pic_url
             }
 
             return ResponseService.success(res, data);
@@ -139,7 +140,8 @@ module.exports = {
 
             let data = {
                 chats: messsages,
-                conversationName: group.name
+                conversationName: group.name,
+                conversationImg: null
             }
 
             return ResponseService.success(res, data);

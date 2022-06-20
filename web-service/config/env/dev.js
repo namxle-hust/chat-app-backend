@@ -19,6 +19,8 @@ module.exports = {
     //     onlyAllowOrigins: ["http://localhost:4200", "http://localhost:1337"]
     // },
 
-    JWT_SECRET_KEY: '12345678'
+    JWT_SECRET_KEY: '12345678',
+
+    hookTimeout: 160000,
 }
 

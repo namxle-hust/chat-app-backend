@@ -15,5 +15,7 @@ module.exports = {
 		}
 	},
 
-    JWT_SECRET_KEY: '12345678'
+    JWT_SECRET_KEY: '12345678',
+
+    hookTimeout: 160000,
 }

@@ -112,7 +112,12 @@ module.exports = {
 
             console.log(messages);
 
-            return ResponseService.success(res, messages);
+            let data = {
+                chats: messages,
+                conversationName: partner.user_name
+            }
+
+            return ResponseService.success(res, data);
 
 		} catch (error) {
 			console.log("Error-ChatController@getPrivateChat: ", error);
@@ -126,11 +131,18 @@ module.exports = {
             let user = req.user;
             let groupId = req.params.group_id;
 
+            let group = await Groups.findOne({ id: groupId })
+
             let messsages = await GroupChat.find().where({
                 group_id: groupId
             }).sort([{ message_time: "DESC" }, { id: "DESC" }]);
 
-            return ResponseService.success(res, messsages);
+            let data = {
+                chats: messsages,
+                conversationName: group.name
+            }
+
+            return ResponseService.success(res, data);
 
         } catch (error) {
             console.log('Error-ChatController@getGroupChat: ', error);

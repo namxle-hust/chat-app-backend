@@ -24,14 +24,14 @@ module.exports = {
 
 			// Save message to the database
 			let msg = {
-			    user_sent_id: userSendId,
-			    user_recv_id: userRecvId,
-			    message_type: msgType,
-			    message_time: msgTime,
-			    message: message
-			}
+				user_sent_id: userSendId,
+				user_recv_id: userRecvId,
+				message_type: msgType,
+				message_time: msgTime,
+				message: message,
+			};
 
-            let chat = await PrivateChat.create(msg).fetch();
+			let chat = await PrivateChat.create(msg).fetch();
 
 			let qmsg = {
 				recv_id: userRecvId,
@@ -39,20 +39,62 @@ module.exports = {
 				msg: message,
 				msg_type: msgType,
 				msg_time: msgTime,
-                msg_id: chat.id
+				msg_id: chat.id,
 			};
 
-            let socketIds = await UserMappingService.getSocketId(userRecvId);
-            if (socketIds && socketIds.length > 0) {
-                socketIds.forEach(sckId => {
-                    sails.sockets.broadcast(sckId, 'calling', qmsg);
-                })
-            } else {
-                await PrivateChat.update({ id: chat.id }, {  message_time: new Date(), message: 'Missed Call' })
-            }
-
+			let socketIds = await UserMappingService.getSocketId(userRecvId);
+			if (socketIds && socketIds.length > 0) {
+				socketIds.forEach((sckId) => {
+					sails.sockets.broadcast(sckId, "calling", qmsg);
+				});
+			} else {
+				await PrivateChat.update(
+					{ id: chat.id },
+					{ message_time: new Date(), message: "Missed Call" }
+				);
+			}
 		} catch (error) {
 			console.log("Error-CallController@call: ", error);
+			return ResponseService.error(res);
+		}
+	},
+
+	// Sent from the person who call
+	cancelCall: async (req, res) => {
+		try {
+			if (!req.isSocket) {
+				return req.badRequest();
+			}
+
+			let data = req.body;
+			let userRecvId = data.recvId;
+			let userSendId = req.user.id;
+			let msgId = data.msgId;
+
+			let msgType = "call";
+			let msgTime = new Date();
+
+			let qmsg = JSON.stringify({
+				recv_id: userRecvId,
+				send_id: userSendId,
+				msg: "Missed Call",
+				msg_type: msgType,
+				msg_time: msgTime,
+				msg_id: msgId,
+			});
+
+			await PrivateChat.update(
+				{ id: msgId },
+				{ message: "Missed Call", message_time: msgTime }
+			);
+
+			// Public to chat exchange w/o routing key
+			await Promise.all([
+				await QueueService.publish(userSendId, new Buffer(qmsg)),
+				await QueueService.publish(userRecvId, new Buffer(qmsg)),
+			]);
+		} catch (error) {
+			console.log("Error-CallController@cancelCall: ", error);
 			return ResponseService.error(res);
 		}
 	},

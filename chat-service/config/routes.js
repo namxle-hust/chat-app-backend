@@ -24,5 +24,16 @@ module.exports.routes = {
 
     '/send': 'ChatController.send',
 
-    '/send-group': 'ChatController.sendGroup'
+    '/send-group': 'ChatController.sendGroup',
+
+
+    // Call service
+    '/call': 'CallController.call',
+
+    '/cancel-call': 'CallController.cancelCall',
+
+    '/answer-call': 'CallController.answer',
+
+    '/finish-call': 'CallController.finishCall'
+
 };

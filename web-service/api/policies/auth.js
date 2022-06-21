@@ -56,12 +56,17 @@ module.exports = async (req, res, next) => {
     
                 return next();
             } catch (error) {
+                if (!ResponseService.isCustomError(error)) {
+					console.log(error);
+				}
                 return ResponseService.error(res, 400);
             }
         }) 
 
     } catch (error) {
-        console.log(error);
+        if (!ResponseService.isCustomError(error)) {
+            console.log(error);
+        }
         return ResponseService.error(res, 400);
     }
 	

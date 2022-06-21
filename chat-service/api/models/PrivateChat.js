@@ -25,8 +25,19 @@ module.exports = {
         message_time: {
             type: 'ref',
             columnType: "timestamp"
-        }
+        },
+        msg_time_total: {
+            type: 'number'
+        },
 	},
 
+
+    message_types: [
+        'text',
+        'icon',
+        'image_url',
+        'call',
+    ]
 }
+
 

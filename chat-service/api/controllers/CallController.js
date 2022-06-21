@@ -98,4 +98,41 @@ module.exports = {
 			return ResponseService.error(res);
 		}
 	},
+
+	finishCall: async (req, res) => {
+		try {
+			if (!req.isSocket) {
+				return req.badRequest();
+			}
+
+			let data = req.body;
+			let msgId = data.msgId;
+			let msgType = "call";
+
+			let chat = await PrivateChat.findOne({ id: msgId });
+
+			let msgTimeTotal = CommonService.dateDiff(chat.message_time);
+
+			let qmsg = JSON.stringify({
+				recv_id: chat.user_recv_id,
+				send_id: chat.user_sent_id,
+				msg: "Call Ended",
+				msg_type: msgType,
+				msg_time_total: msgTimeTotal,
+				msg_id: msgId,
+			});
+
+			await Promise.all([
+				await PrivateChat.update(
+					{ id: msgId },
+					{ msg_time_total: msgTimeTotal, message: "Call Ended" }
+				),
+				await QueueService.publish(chat.user_recv_id, new Buffer(qmsg)),
+				await QueueService.publish(chat.user_sent_id, new Buffer(qmsg)),
+			]);
+		} catch (error) {
+			console.log("Error-CallController@finishCall: ", error);
+			return ResponseService.error(res);
+		}
+	},
 };

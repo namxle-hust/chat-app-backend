@@ -25,7 +25,10 @@ module.exports = {
         },
         message_type: {
 			type: "string"
-		}
+		},
+        msg_time_total: {
+            type: 'number'
+        },
 	}
 
 }

@@ -135,4 +135,62 @@ module.exports = {
 			return ResponseService.error(res);
 		}
 	},
+	answer: async (req, res) => {
+		try {
+			if (!req.isSocket) {
+				return req.badRequest();
+			}
+
+			let data = req.body;
+
+			let peerId = data.peer_id;
+			let userRecvId = data.user_recv_id;
+			let response = data.response;
+			let msgId = data.msgId;
+
+			let socketIds = await UserMappingService.getSocketId(userRecvId);
+
+			if (response == "accept") {
+				let msg = {
+					data: {
+						user_sent_id: req.user.id,
+						peer_id: peerId,
+						msg_id: msgId,
+					},
+				};
+
+				// Send the one who call that the call have been accepted with peer id
+				socketIds.forEach((sckId) => {
+					sails.sockets.broadcast(sckId, "answerCall", msg);
+				});
+			} else {
+				// The call have been rejected
+
+				let msgTime = new Date();
+
+				let qmsg = JSON.stringify({
+					recv_id: req.user.id,
+					send_id: userRecvId,
+					msg: "Missed Call",
+					msg_type: "call",
+					msg_time: msgTime,
+					msg_id: msgId,
+				});
+
+				await PrivateChat.update(
+					{ id: msgId },
+					{ message: "Missed Call", message_time: msgTime }
+				);
+
+				// Public to chat exchange w/o routing key
+				await Promise.all([
+					await QueueService.publish(req.user.id, new Buffer(qmsg)),
+					await QueueService.publish(userRecvId, new Buffer(qmsg)),
+				]);
+			}
+		} catch (error) {
+			console.log("Error-CallController@accept: ", error);
+			return ResponseService.error(res);
+		}
+	},
 };

@@ -9,5 +9,13 @@ module.exports = {
         const diffTime = Math.abs(date2 - date1);
 
         return diffTime;
-    }
+    },
+
+    delay: (t, val) => {
+        return new Promise(function(resolve) {
+            setTimeout(function() {
+                resolve(val);
+            }, t);
+        });
+     }
 }

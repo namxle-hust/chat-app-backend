@@ -53,9 +53,14 @@ module.exports = {
 					{ message_time: new Date(), message: "Missed Call" }
 				);
 			}
+
+            // ResponseService.success(res);
+			await VideoCallService.missedCall(chat.id);
+
+			return;
 		} catch (error) {
 			console.log("Error-CallController@call: ", error);
-			return ResponseService.error(res);
+			// return ResponseService.error(res);
 		}
 	},
 
@@ -67,35 +72,22 @@ module.exports = {
 			}
 
 			let data = req.body;
-			let userRecvId = data.recvId;
 			let userSendId = req.user.id;
-			let msgId = data.msgId;
+			let msgId = data.msg_id;
 
-			let msgType = "call";
-			let msgTime = new Date();
+			let message = await PrivateChat.findOne({ id: msgId });
 
-			let qmsg = JSON.stringify({
-				recv_id: userRecvId,
-				send_id: userSendId,
-				msg: "Missed Call",
-				msg_type: msgType,
-				msg_time: msgTime,
-				msg_id: msgId,
-			});
+			if (message.message == "Missed Call") {
+				return;
+				// return ResponseService.success(res);
+			}
 
-			await PrivateChat.update(
-				{ id: msgId },
-				{ message: "Missed Call", message_time: msgTime }
-			);
+			await VideoCallService.cancelCall(message.user_recv_id, userSendId, msgId);
 
-			// Public to chat exchange w/o routing key
-			await Promise.all([
-				await QueueService.publish(userSendId, new Buffer(qmsg)),
-				await QueueService.publish(userRecvId, new Buffer(qmsg)),
-			]);
+			// return ResponseService.success(res);
 		} catch (error) {
 			console.log("Error-CallController@cancelCall: ", error);
-			return ResponseService.error(res);
+			// return ResponseService.error(res);
 		}
 	},
 
@@ -106,7 +98,7 @@ module.exports = {
 			}
 
 			let data = req.body;
-			let msgId = data.msgId;
+			let msgId = data.msg_id;
 			let msgType = "call";
 
 			let chat = await PrivateChat.findOne({ id: msgId });
@@ -130,9 +122,10 @@ module.exports = {
 				await QueueService.publish(chat.user_recv_id, new Buffer(qmsg)),
 				await QueueService.publish(chat.user_sent_id, new Buffer(qmsg)),
 			]);
+			// return ResponseService.success(res);
 		} catch (error) {
 			console.log("Error-CallController@finishCall: ", error);
-			return ResponseService.error(res);
+			// return ResponseService.error(res);
 		}
 	},
 	answer: async (req, res) => {
@@ -146,11 +139,20 @@ module.exports = {
 			let peerId = data.peer_id;
 			let userRecvId = data.user_recv_id;
 			let response = data.response;
-			let msgId = data.msgId;
+			let msgId = data.msg_id;
 
 			let socketIds = await UserMappingService.getSocketId(userRecvId);
 
 			if (response == "accept") {
+				let message = await PrivateChat.findOne({ id: msgId });
+
+				if (message.message == "Missed Call") {
+                    return;
+                    // return ResponseService.success(res); 
+				}
+
+                await PrivateChat.update({ id: msgId }, { message: 'In a call' });
+
 				let msg = {
 					data: {
 						user_sent_id: req.user.id,
@@ -188,9 +190,10 @@ module.exports = {
 					await QueueService.publish(userRecvId, new Buffer(qmsg)),
 				]);
 			}
+			// return ResponseService.success(res);
 		} catch (error) {
 			console.log("Error-CallController@accept: ", error);
-			return ResponseService.error(res);
+			// return ResponseService.error(res);
 		}
 	},
 };

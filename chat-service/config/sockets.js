@@ -44,7 +44,7 @@ module.exports.sockets = {
 		// console.log(handshake);
 		// `true` allows the socket to connect.
 		// (`false` would reject the connection)
-		console.log(handshake._query);
+		// console.log(handshake._query);
 		return proceed(undefined, true);
 	},
 

@@ -111,7 +111,7 @@ module.exports = {
                 // return true;
             })
 
-            console.log(removeKeys)
+            // console.log(removeKeys)
 
             if (removeKeys.length > 0) {
                 await sessionRedis.sendCommand(['del'].concat(removeKeys));

@@ -13,7 +13,7 @@ module.exports = {
                 return parseInt(id.split(':')[1])
             });
 
-            console.log(userIds);
+            // console.log(userIds);
 
             sails.sockets.blast('getUsers', {
                 data: userIds

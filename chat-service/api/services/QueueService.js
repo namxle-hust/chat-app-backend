@@ -66,8 +66,9 @@ module.exports = {
             let socketId = await UserMappingService.getSocketId(id);
 
             // Not binding queue if user already online
-            if (socketId && socketId.length > 0) {
+            if (socketId && socketId.length > 1) {
                 console.log("Not bind")
+                console.log(id);
                 console.log(socketId)
                 return null;
             }
@@ -100,10 +101,9 @@ module.exports = {
                             })
                             ch.ack(msg);
                         } else {
-                            await QueueService.cancelConsumerTag(id)
                             ch.nack(msg);
+                            // await QueueService.cancelConsumerTag(id)
                             console.log('Consumer cancelled by server');
-                            return false;
                             // throw ResponseService.customError('Consumer cancelled by server 2');
                             
                         }

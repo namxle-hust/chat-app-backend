@@ -20,7 +20,7 @@ module.exports = {
                         (user_recv_id = ${user.id} AND user_sent_id = a.user_id)
                     OR
                         (user_sent_id = ${user.id} AND user_recv_id = a.user_id)
-                    ORDER BY p1.message_time ASC
+                    ORDER BY p1.message_time DESC
                     LIMIT 1
                 ) as last_message,
                 (
@@ -29,7 +29,7 @@ module.exports = {
                         (user_recv_id = ${user.id} AND user_sent_id = a.user_id)
                     OR
                         (user_sent_id = ${user.id} AND user_recv_id = a.user_id)
-                    ORDER BY p1.message_time ASC
+                    ORDER BY p1.message_time DESC
                     LIMIT 1
                 ) as message_time,
                 (SELECT 0) as is_group
@@ -54,7 +54,7 @@ module.exports = {
                     (SELECT 1) as is_group
                 FROM group_chat as g
                 WHERE g.user_id = ${user.id}
-                ORDER BY g.message_time ASC
+                ORDER BY g.message_time
                 LIMIT 1
                 `;
 
@@ -108,7 +108,7 @@ module.exports = {
 						},
 					],
 				})
-				.sort([{ id: "DESC" }, { message_time: "DESC" }]);
+				.sort([{ id: "ASC" }, { message_time: "ASC" }]);
 
             console.log(messages);
 
@@ -136,7 +136,7 @@ module.exports = {
 
             let messsages = await GroupChat.find().where({
                 group_id: groupId
-            }).sort([{ message_time: "DESC" }, { id: "DESC" }]);
+            }).sort([{ message_time: "ASC" }, { id: "ASC" }]);
 
             let data = {
                 chats: messsages,

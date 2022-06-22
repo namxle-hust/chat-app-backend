@@ -64,6 +64,8 @@ module.exports = {
 
             await GroupChat.create(msg);
             await GroupService.send(qmsg, groupRecvId);
+
+            return ResponseService.success(res);
         
         } catch (error) {
             console.log('Error-ChatController@sendGroup: ', error);
@@ -93,6 +95,14 @@ module.exports = {
                 msg_type: msgType,
                 msg_time: msgTime
             })
+
+            let messageResponse = {
+                recv_id: userRecvId,
+                send_id: userSendId,
+                msg: message,
+                msg_type: msgType,
+                msg_time: msgTime
+            }
             
             // Save message to the database
             let msg = {
@@ -108,7 +118,7 @@ module.exports = {
             // Public to chat exchange w/o routing key
             await QueueService.publish(userRecvId ,new Buffer(qmsg));
 
-            return ResponseService.success(res);            
+            return ResponseService.success(res, messageResponse);         
 
         } catch (error) {
             console.log('Error-ChatController@send: ', error);

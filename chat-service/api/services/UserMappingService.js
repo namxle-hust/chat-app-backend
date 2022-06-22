@@ -76,7 +76,7 @@ module.exports = {
 
             let socketIds = await client.get(`id:${userId}`);
 
-            console.log(socketIds);
+            // console.log(socketIds);
 
             if (!socketIds) {
                 return [];

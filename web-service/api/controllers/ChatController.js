@@ -20,7 +20,7 @@ module.exports = {
                         (user_recv_id = ${user.id} AND user_sent_id = a.user_id)
                     OR
                         (user_sent_id = ${user.id} AND user_recv_id = a.user_id)
-                    ORDER BY p1.message_time DESC
+                    ORDER BY p1.message_time ASC
                     LIMIT 1
                 ) as last_message,
                 (
@@ -29,7 +29,7 @@ module.exports = {
                         (user_recv_id = ${user.id} AND user_sent_id = a.user_id)
                     OR
                         (user_sent_id = ${user.id} AND user_recv_id = a.user_id)
-                    ORDER BY p1.message_time DESC
+                    ORDER BY p1.message_time ASC
                     LIMIT 1
                 ) as message_time,
                 (SELECT 0) as is_group
@@ -54,7 +54,7 @@ module.exports = {
                     (SELECT 1) as is_group
                 FROM group_chat as g
                 WHERE g.user_id = ${user.id}
-                ORDER BY g.message_time
+                ORDER BY g.message_time ASC
                 LIMIT 1
                 `;
 

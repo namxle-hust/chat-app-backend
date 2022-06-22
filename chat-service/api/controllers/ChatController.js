@@ -6,17 +6,18 @@ module.exports = {
                 return req.badRequest();
             }
     
-            // console.log(req.socket.id);
-            // console.log(req.user.id);
-            let q = await QueueService.bindQueue(req.user.id);
-
+            console.log(req.socket.id);
+            console.log(req.user.id);
+            
             await UserMappingService.save(req.user.id, req.socket.id);
+
+            let q = await QueueService.bindQueue(req.user.id);
 
             await ChatService.boardcastUser();
             
             req.socket.on('disconnect', async () => {
-                await QueueService.cancelConsumerTag(req.user.id);
                 await UserMappingService.delete(req.user.id, req.socket.id);
+                await QueueService.cancelConsumerTag(req.user.id);
                 await ChatService.boardcastUser();
                 console.log('User disconnected');
             });

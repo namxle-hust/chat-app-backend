@@ -45,7 +45,7 @@ module.exports = {
             
             // Message for queue
             let qmsg = JSON.stringify({
-                recv_id: null,
+                recv_id: groupRecvId,
                 send_id: userSendId,
                 msg: message,
                 msg_type: msgType,

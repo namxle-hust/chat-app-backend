@@ -10,8 +10,6 @@ module.exports = {
 			await Promise.all(
 				users.map(async (user) => {
 					let queueMessage = JSON.parse(JSON.stringify(qmsg));
-					queueMessage.recv_id = user.id;
-
 					await QueueService.publish(user.id, queueMessage);
 				})
 			);

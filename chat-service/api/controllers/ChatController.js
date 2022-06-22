@@ -98,11 +98,11 @@ module.exports = {
             })
 
             let messageResponse = {
-                recv_id: userRecvId,
-                send_id: userSendId,
-                msg: message,
-                msg_type: msgType,
-                msg_time: msgTime
+                user_recv_id: userRecvId,
+                user_sent_id: userSendId,
+                message: message,
+                message_type: msgType,
+                message_time: msgTime
             }
             
             // Save message to the database

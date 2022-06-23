@@ -22,7 +22,7 @@ module.exports = {
                 console.log('User disconnected');
             });
 
-            return ResponseService.success(res);
+            return ResponseService.success(res,  { user_id: req.user.id });
         } catch (error) {
             console.log('Error-ChatController@subscribe: ', error);
             return ResponseService.error(res);

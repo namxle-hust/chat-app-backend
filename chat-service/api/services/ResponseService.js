@@ -53,7 +53,7 @@ module.exports = {
 	 * @param  {Mix} data
 	 * @param  {Mix} code
 	 */
-	success: function (res, message, data, code) {
+	success: function (res, data, message, code) {
 		let content = {
 			status: 'success'
 		}

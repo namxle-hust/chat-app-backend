@@ -29,6 +29,10 @@ module.exports = {
         msg_time_total: {
             type: 'number'
         },
+        status: {
+            type: 'string',
+            allowNull: true
+        },
 	},
 
 
@@ -38,6 +42,8 @@ module.exports = {
         'image_url',
         'call',
     ]
+
+    // message statuses: [ 'sent', 'delivered', 'seen' ]
 }
 
 

@@ -43,16 +43,6 @@ module.exports = {
             let userSendId = req.user.id;
             let msgType = data.msg_type
             let msgTime = new Date();
-            
-            // Message for queue
-            let qmsg = JSON.stringify({
-                group_id: groupRecvId,
-                user_id: userSendId,
-                message: message,
-                message_type: msgType,
-                message_time: msgTime,
-                is_group: true
-            })
 
             // Save message to the database
             let msg = {
@@ -62,14 +52,64 @@ module.exports = {
                 message: message,
                 message_time: msgTime
             }
+            let messageCreated = await GroupChat.create(msg).fetch();
 
-            await GroupChat.create(msg);
+            // Message for queue
+            let qmsg = JSON.stringify({
+                group_id: groupRecvId,
+                user_id: userSendId,
+                message: message,
+                message_type: msgType,
+                message_time: msgTime,
+                is_group: true,
+                id: messageCreated.id
+            })
+
             await GroupService.send(qmsg, groupRecvId);
 
             return ResponseService.success(res);
         
         } catch (error) {
             console.log('Error-ChatController@sendGroup: ', error);
+            return ResponseService.error(res);
+        }
+    },
+
+    updateMessage: async (req, res) => {
+        try {
+
+            if (!req.isSocket) {
+                return req.badRequest();
+            }
+
+            let messageId = req.body.id;
+            let status = req.body.status;
+            let message_time = new Date();
+
+            if (status == 'delivered') {
+                let quemsg = {
+                    status: 'delivered',
+                    id: messageId,
+                    message_time: message_time
+                }
+
+                let message = await PrivateChat.update({ id: messageId }, { status: status }).fetch();
+
+                message = message[0];
+
+                if (message) {
+                    let socketIds = await UserMappingService.getSocketId(message.user_sent_id);
+
+                    if (socketIds && socketIds.length > 0) {
+                        socketIds.forEach(sckId => {
+                            sails.sockets.broadcast(sckId, 'updateMessage', quemsg);
+                        })
+                    }
+                }
+            }
+
+        } catch (error) {
+            console.log('Error-ChatController@updateMessage: ', error);
             return ResponseService.error(res);
         }
     },
@@ -89,21 +129,13 @@ module.exports = {
             let msgType = data.msg_type
             let msgTime = new Date();
 
-            let qmsg = JSON.stringify({
-                user_recv_id: userRecvId,
-                user_sent_id: userSendId,
-                message: message,
-                message_type: msgType,
-                message_time: msgTime,
-                msg_time_total: 0
-            })
-
             let messageResponse = {
                 user_recv_id: userRecvId,
                 user_sent_id: userSendId,
                 message: message,
                 message_type: msgType,
-                message_time: msgTime
+                message_time: msgTime,
+                status: 'sent'
             }
             
             // Save message to the database
@@ -112,15 +144,40 @@ module.exports = {
                 user_recv_id: userRecvId,
                 message_type: msgType,
                 message_time: msgTime,
-                message: message
+                message: message,
+                status: 'sent'
             }
 
-            await PrivateChat.create(msg);
+            let messageCreated = await PrivateChat.create(msg).fetch();
+
+            let qmsg = JSON.stringify({
+                user_recv_id: userRecvId,
+                user_sent_id: userSendId,
+                message: message,
+                message_type: msgType,
+                message_time: msgTime,
+                msg_time_total: 0,
+                id: messageCreated.id
+            })
+
+            ResponseService.success(res, messageResponse);       
+
+            let quemsg = {
+                status: 'sent',
+                id: messageCreated.id,
+                message_time: msgTime
+            }
+
+            let socketIds = await UserMappingService.getSocketId(userSendId);
+
+            if (socketIds && socketIds.length > 0) {
+                socketIds.forEach(sckId => {
+                    sails.sockets.broadcast(sckId, 'updateMessage', quemsg);
+                })
+            }
 
             // Public to chat exchange w/o routing key
             await QueueService.publish(userRecvId ,new Buffer(qmsg));
-
-            return ResponseService.success(res, messageResponse);         
 
         } catch (error) {
             console.log('Error-ChatController@send: ', error);

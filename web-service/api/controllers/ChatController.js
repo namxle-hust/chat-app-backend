@@ -32,6 +32,24 @@ module.exports = {
                     ORDER BY p1.message_time DESC
                     LIMIT 1
                 ) as message_time,
+                (
+                    SELECT id FROM private_chat as p1 
+                    WHERE 
+                        (user_recv_id = ${user.id} AND user_sent_id = a.user_id)
+                    OR
+                        (user_sent_id = ${user.id} AND user_recv_id = a.user_id)
+                    ORDER BY p1.message_time DESC
+                    LIMIT 1
+                ) as last_message_id,
+                (
+                    SELECT user_sent_id FROM private_chat as p1 
+                    WHERE 
+                        (user_recv_id = ${user.id} AND user_sent_id = a.user_id)
+                    OR
+                        (user_sent_id = ${user.id} AND user_recv_id = a.user_id)
+                    ORDER BY p1.message_time DESC
+                    LIMIT 1
+                ) as last_message_owner_id,
                 (SELECT 0) as is_group
             FROM 
                 (

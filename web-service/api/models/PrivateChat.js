@@ -19,6 +19,10 @@ module.exports = {
             type: 'string',
             columnType: 'text'
         },
+        status: {
+            type: 'string',
+            allowNull: true
+        },
         message_time: {
             type: 'ref',
             columnType: "timestamp"

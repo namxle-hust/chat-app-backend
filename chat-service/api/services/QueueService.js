@@ -97,6 +97,7 @@ module.exports = {
                         let socketIds = await UserMappingService.getSocketId(id);
                         if (socketIds && socketIds.length > 0) {
                             socketIds.forEach(sckId => {
+                                console.log(sckId);
                                 sails.sockets.broadcast(sckId, 'getMessage', quemsg);
                             })
                             ch.ack(msg);

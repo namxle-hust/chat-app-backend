@@ -11,13 +11,13 @@ module.exports = {
             
             await UserMappingService.save(req.user.id, req.socket.id);
 
-            let q = await QueueService.bindQueue(req.user.id);
+            await Promise.all([QueueService.bindQueue(req.user.id), QueueService.bindQueueUpdateMessage(req.user.id)]);
 
             await ChatService.boardcastUser();
             
             req.socket.on('disconnect', async () => {
                 await UserMappingService.delete(req.user.id, req.socket.id);
-                await QueueService.cancelConsumerTag(req.user.id);
+                await Promise.all([QueueService.cancelConsumerTag(req.user.id), QueueService.cancelConsumerTagUpdateMessage(req.user.id)])
                 await ChatService.boardcastUser();
                 console.log('User disconnected');
             });
@@ -85,6 +85,7 @@ module.exports = {
             let messageId = req.body.id;
             let status = req.body.status;
             let message_time = new Date();
+            let userRecvId = req.body.user_sent_id;
 
             if (status == 'delivered') {
                 let quemsg = {
@@ -93,19 +94,12 @@ module.exports = {
                     message_time: message_time
                 }
 
-                let message = await PrivateChat.update({ id: messageId }, { status: status }).fetch();
+                quemsg = JSON.stringify(quemsg);
 
-                message = message[0];
+                await QueueService.publishUpdateMessage(userRecvId ,new Buffer(quemsg));
 
-                if (message) {
-                    let socketIds = await UserMappingService.getSocketId(message.user_sent_id);
+                await PrivateChat.update({ id: messageId }, { status: status });
 
-                    if (socketIds && socketIds.length > 0) {
-                        socketIds.forEach(sckId => {
-                            sails.sockets.broadcast(sckId, 'updateMessage', quemsg);
-                        })
-                    }
-                }
             }
 
         } catch (error) {

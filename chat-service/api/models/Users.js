@@ -48,6 +48,17 @@ module.exports = {
 		}
 	},
 
+    getUserUpdateMessageQueueKey: (id) => {
+        return `kuser_update_message_${id}`;
+    },
+
+    getUserUpdateMessageQueueName: (id) => {
+        return `queue_update_message_user_${id}`;
+    },
+
+    getConsumerTagUpdateMessage: (id) => {
+        return `consumer_update_message_tag_${id}`
+    },
 
     getUserQueueKey: (id) => {
         return `ksuser_${id}`;

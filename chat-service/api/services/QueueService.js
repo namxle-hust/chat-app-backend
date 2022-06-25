@@ -46,6 +46,22 @@ module.exports = {
         }
     },
 
+    publishUpdateMessage: async (user_id, content) => {
+        try {
+
+            let key = Users.getUserUpdateMessageQueueKey(user_id);
+
+            const ch = await QueueService.getChannel();
+
+            await ch.publish(ex, key, content, {deliveryMode: 2, mandatory: true});
+
+            return true;
+
+        } catch (error) {
+            throw error;
+        }
+    },
+
     publish: async (user_id, content) => {
         try {
             let key = Users.getUserQueueKey(user_id);
@@ -55,6 +71,59 @@ module.exports = {
             await ch.publish(ex, key, content, {deliveryMode: 2, mandatory: true});
 
             return true;
+
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    bindQueueUpdateMessage: async (id) => {
+        try {
+            let socketId = await UserMappingService.getSocketId(id);
+
+            // Not binding queue if user already online
+            if (socketId && socketId.length > 1) {
+                console.log("Not bind")
+                console.log(id);
+                console.log(socketId)
+                return null;
+            }
+
+            let key = Users.getUserUpdateMessageQueueKey(id);
+
+            let queueName = Users.getUserUpdateMessageQueueName(id);
+
+            let consumerTag = Users.getConsumerTagUpdateMessage(id);
+
+            const ch = await QueueService.getChannel();
+
+            await ch.assertExchange(ex, 'direct', {durable: false});
+
+            let q = await ch.assertQueue(queueName, { durable: true });
+
+            await ch.bindQueue(q.queue, ex, key);
+
+            await ch.consume(q.queue, async (msg) => {
+                try {
+                    if (msg !== null) {		    								
+                        let encodemsg = msg.content.toString();
+                        let quemsg = JSON.parse(encodemsg);
+                        
+                        
+                        let socketIds = await UserMappingService.getSocketId(id);
+                        socketIds.forEach(sckId => {
+                            console.log(quemsg);
+                            sails.sockets.broadcast(sckId, 'updateMessage', quemsg);
+                        })
+                    }
+
+                } catch (error) {
+                    console.log(error);
+                }
+                // console.log("Test");
+            }, {noAck: true, consumerTag: consumerTag});
+
+            return q;
 
         } catch (error) {
             throw error;
@@ -97,7 +166,6 @@ module.exports = {
                         let socketIds = await UserMappingService.getSocketId(id);
                         if (socketIds && socketIds.length > 0) {
                             socketIds.forEach(sckId => {
-                                console.log(sckId);
                                 sails.sockets.broadcast(sckId, 'getMessage', quemsg);
                             })
                             ch.ack(msg);
@@ -127,6 +195,27 @@ module.exports = {
         try {
 
             let consumerTag = Users.getUserConsumerTag(userId);
+
+            const ch = await QueueService.getChannel();
+
+            let value = await UserMappingService.getSocketId(userId);
+
+            if (value.length <= 1) {
+                console.log(`Cancel ${consumerTag}`)
+
+                await ch.cancel(consumerTag);
+            }
+
+            return true;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    cancelConsumerTagUpdateMessage: async (userId) => {
+        try {
+
+            let consumerTag = Users.getConsumerTagUpdateMessage(userId);
 
             const ch = await QueueService.getChannel();
 

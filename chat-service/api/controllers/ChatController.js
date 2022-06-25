@@ -128,15 +128,6 @@ module.exports = {
             let userSendId = req.user.id;
             let msgType = data.msg_type
             let msgTime = new Date();
-
-            let messageResponse = {
-                user_recv_id: userRecvId,
-                user_sent_id: userSendId,
-                message: message,
-                message_type: msgType,
-                message_time: msgTime,
-                status: 'sent'
-            }
             
             // Save message to the database
             let msg = {
@@ -159,6 +150,17 @@ module.exports = {
                 msg_time_total: 0,
                 id: messageCreated.id
             })
+
+
+            let messageResponse = {
+                user_recv_id: userRecvId,
+                user_sent_id: userSendId,
+                message: message,
+                message_type: msgType,
+                message_time: msgTime,
+                status: 'sent',
+                id: messageCreated.id
+            }
 
             ResponseService.success(res, messageResponse);       
 

@@ -98,7 +98,10 @@ module.exports = {
 
                 await QueueService.publishUpdateMessage(userRecvId ,new Buffer(quemsg));
 
+                ResponseSevice.success(res);
+
                 await PrivateChat.update({ id: messageId }, { status: status });
+                
 
             }
 

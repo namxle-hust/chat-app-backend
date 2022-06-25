@@ -5,6 +5,9 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 
+// const multer = require('multer')
+// const upload = multer();
+
 module.exports = {
 	getConversations: async (req, res) => {
 		try {
@@ -128,45 +131,71 @@ module.exports = {
 				})
 				.sort([{ id: "ASC" }, { message_time: "ASC" }]);
 
-            console.log(messages);
+			console.log(messages);
 
-            let data = {
-                chats: messages,
-                conversationName: partner.user_name,
-                conversationImg: partner.profile_pic_url
-            }
+			let data = {
+				chats: messages,
+				conversationName: partner.user_name,
+				conversationImg: partner.profile_pic_url,
+			};
 
-            return ResponseService.success(res, data);
-
+			return ResponseService.success(res, data);
 		} catch (error) {
 			console.log("Error-ChatController@getPrivateChat: ", error);
 			return ResponseService.error(res);
 		}
 	},
 
+	getGroupChat: async (req, res) => {
+		try {
+			let user = req.user;
+			let groupId = req.params.group_id;
 
-    getGroupChat: async (req, res) => {
-        try {
-            let user = req.user;
-            let groupId = req.params.group_id;
+			let group = await Groups.findOne({ id: groupId });
 
-            let group = await Groups.findOne({ id: groupId })
+			let messsages = await GroupChat.find()
+				.where({
+					group_id: groupId,
+				})
+				.sort([{ message_time: "ASC" }, { id: "ASC" }]);
 
-            let messsages = await GroupChat.find().where({
-                group_id: groupId
-            }).sort([{ message_time: "ASC" }, { id: "ASC" }]);
+			let data = {
+				chats: messsages,
+				conversationName: group.name,
+				conversationImg: null,
+			};
 
-            let data = {
-                chats: messsages,
-                conversationName: group.name,
-                conversationImg: null
-            }
+			return ResponseService.success(res, data);
+		} catch (error) {
+			console.log("Error-ChatController@getGroupChat: ", error);
+			return ResponseService.error(res);
+		}
+	},
 
-            return ResponseService.success(res, data);
+	upload: async (req, res) => {
+		try {
+			req.file("image").upload(
+				{
+					dirname: require("path").resolve(
+						sails.config.appPath,
+						"assets/public/chats"
+					),
+				},
+				function (err, uploadedFiles) {
+					if (err) return ResponseService.error(res);
 
-        } catch (error) {
-            console.log('Error-ChatController@getGroupChat: ', error);
-            return ResponseService.error(res);
-        }
-    }
+                    let file = uploadedFiles[0];
+
+                    file.fd = file.fd.split('/home/ubuntu/service/assets/')[1]
+
+					return ResponseService.success(res, {
+                        file_path: file
+                    })
+				}
+			);
+		} catch (error) {
+			console.log("Error-ChatController@upload: ", error);
+			return ResponseService.error(res);
+		}
+	},
 };

@@ -30,6 +30,8 @@ module.exports.routes = {
     'GET /conversation/group/:group_id': 'ChatController.getGroupChat',
 
     'GET /users/getUser/:id' : 'UsersController.getUser',
+
+    'POST /upload/image' : 'ChatController.upload',
     
     '/test': 'TestController.test',
 

@@ -124,6 +124,8 @@ nbproject
 .vscode
 .node_history
 dump.rdb
+assets/public/chats/*
+assets/public/chats
 
 npm-debug.log
 lib-cov

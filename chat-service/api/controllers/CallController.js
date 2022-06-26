@@ -33,14 +33,15 @@ module.exports = {
 
 			let chat = await PrivateChat.create(msg).fetch();
 
-			let qmsg = {
-				recv_id: userRecvId,
-				send_id: userSendId,
-				msg: message,
-				msg_type: msgType,
-				msg_time: msgTime,
-				msg_id: chat.id,
-			};
+            let qmsg = {
+                user_recv_id: userRecvId,
+                user_sent_id: userSendId,
+                message: message,
+                message_type: msgType,
+                message_time: msgTime,
+                msg_time_total: 0,
+                id: chat.id
+            }
 
 			let socketIds = await UserMappingService.getSocketId(userRecvId);
 			if (socketIds && socketIds.length > 0) {
@@ -48,16 +49,14 @@ module.exports = {
 					sails.sockets.broadcast(sckId, "calling", qmsg);
 				});
 			} else {
-				await PrivateChat.update(
-					{ id: chat.id },
-					{ message_time: new Date(), message: "Missed Call" }
-				);
+				await VideoCallService.cancelCall(userRecvId, userSendId, chat.id);
+                return ResponseService.success(res);
 			}
 
             // ResponseService.success(res);
 			await VideoCallService.missedCall(chat.id);
 
-			return;
+			return ResponseService.success(res);
 		} catch (error) {
 			console.log("Error-CallController@call: ", error);
 			// return ResponseService.error(res);
@@ -106,23 +105,24 @@ module.exports = {
 			let msgTimeTotal = CommonService.dateDiff(chat.message_time);
 
 			let qmsg = JSON.stringify({
-				recv_id: chat.user_recv_id,
-				send_id: chat.user_sent_id,
-				msg: "Call Ended",
-				msg_type: msgType,
+				user_recv_id: chat.user_recv_id,
+				user_sent_id: chat.user_sent_id,
+				message: "Call Ended",
+                message_time: new Date(),
+				message_type: msgType,
 				msg_time_total: msgTimeTotal,
-				msg_id: msgId,
+				id: msgId,
 			});
 
 			await Promise.all([
-				await PrivateChat.update(
+				PrivateChat.update(
 					{ id: msgId },
 					{ msg_time_total: msgTimeTotal, message: "Call Ended" }
 				),
-				await QueueService.publish(chat.user_recv_id, new Buffer(qmsg)),
-				await QueueService.publish(chat.user_sent_id, new Buffer(qmsg)),
+				QueueService.publish(chat.user_recv_id, new Buffer(qmsg)),
+				QueueService.publish(chat.user_sent_id, new Buffer(qmsg)),
 			]);
-			// return ResponseService.success(res);
+			return ResponseService.success(res);
 		} catch (error) {
 			console.log("Error-CallController@finishCall: ", error);
 			// return ResponseService.error(res);
@@ -168,29 +168,10 @@ module.exports = {
 			} else {
 				// The call have been rejected
 
-				let msgTime = new Date();
+				await VideoCallService.cancelCall(userRecvId, req.user.id, msgId);
 
-				let qmsg = JSON.stringify({
-					recv_id: req.user.id,
-					send_id: userRecvId,
-					msg: "Missed Call",
-					msg_type: "call",
-					msg_time: msgTime,
-					msg_id: msgId,
-				});
-
-				await PrivateChat.update(
-					{ id: msgId },
-					{ message: "Missed Call", message_time: msgTime }
-				);
-
-				// Public to chat exchange w/o routing key
-				await Promise.all([
-					await QueueService.publish(req.user.id, new Buffer(qmsg)),
-					await QueueService.publish(userRecvId, new Buffer(qmsg)),
-				]);
 			}
-			// return ResponseService.success(res);
+			return ResponseService.success(res);
 		} catch (error) {
 			console.log("Error-CallController@accept: ", error);
 			// return ResponseService.error(res);

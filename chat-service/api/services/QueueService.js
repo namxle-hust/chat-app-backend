@@ -200,7 +200,7 @@ module.exports = {
 
             let value = await UserMappingService.getSocketId(userId);
 
-            if (value.length <= 1) {
+            if (value.length < 1) {
                 console.log(`Cancel ${consumerTag}`)
 
                 await ch.cancel(consumerTag);
@@ -221,7 +221,7 @@ module.exports = {
 
             let value = await UserMappingService.getSocketId(userId);
 
-            if (value.length <= 1) {
+            if (value.length < 1) {
                 console.log(`Cancel ${consumerTag}`)
 
                 await ch.cancel(consumerTag);

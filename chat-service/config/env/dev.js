@@ -12,6 +12,10 @@ module.exports = {
 			user: 'root',
 			password: 'root',
 			database: 'chat_app',
+
+            // Optional
+			charset: 'utf8mb4',
+			collation: 'utf8mb4_general_ci',
 		}
 	},
 

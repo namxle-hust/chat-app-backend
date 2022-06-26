@@ -1,14 +1,13 @@
 module.exports = {
     missedCall: async (msg_id) => {
         try {
-            await CommonService.delay(30000);
+            // Delay 50 secs until
+            await CommonService.delay(50000);
 
             let message = await PrivateChat.findOne({ id: msg_id })
 
             if (message.message == 'Missed Call' || message.message == 'In a call') {
                 return;
-            } else {
-                await PrivateChat.update({ id: msg_id }, { message: 'Missed Call' })
             }
 
             let userRecvId = message.user_recv_id;
@@ -28,25 +27,28 @@ module.exports = {
             let msgType = "call";
 			let msgTime = new Date();
 
+            await PrivateChat.update(
+                { id: msgId },
+                { message: "Missed Call", message_time: msgTime }
+            );
+
 			let qmsg = JSON.stringify({
-				recv_id: userRecvId,
-				send_id: userSendId,
-				msg: "Missed Call",
-				msg_type: msgType,
-				msg_time: msgTime,
-				msg_id: msgId,
+				user_recv_id: userRecvId,
+				user_sent_id: userSendId,
+				message: "Missed Call",
+				message_type: msgType,
+                msg_time_total: 0,
+				message_time: msgTime,
+				id: msgId,
 			});
 
-			await PrivateChat.update(
-				{ id: msgId },
-				{ message: "Missed Call", message_time: msgTime }
-			);
 
 			// Public to chat exchange w/o routing key
 			await Promise.all([
-				await QueueService.publish(userSendId, new Buffer(qmsg)),
 				await QueueService.publish(userRecvId, new Buffer(qmsg)),
+				await QueueService.publish(userSendId, new Buffer(qmsg)),
 			]);
+
         } catch (error) {
             throw error;
         }

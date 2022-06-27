@@ -42,7 +42,7 @@ module.exports = {
                 message: message
             }
 
-            // await PrivateChat.create(msg);
+            await PrivateChat.create(msg);
 
             // Public to chat exchange w/o routing key
             await QueueService.publish(userRecvId ,new Buffer(qmsg));

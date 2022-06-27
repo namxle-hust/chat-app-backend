@@ -6,6 +6,28 @@
  */
 
 module.exports = {
+    getUserInformation: async (req, res) => {
+        try {
+            if (!req.isSocket) {
+				return req.badRequest();
+			}
+
+            let userId = req.body.user_id;
+
+            let user = await Users.findOne({ id: userId });
+
+            let data = {
+                user: user
+            }
+            
+            return ResponseService.success(res, data);
+
+        } catch (error) {
+            console.log("Error-CallController@getUserInformation: ", error);
+			return ResponseService.error(res);
+        }
+    },
+
 	// Sent from the one who received call
 
 	call: async (req, res) => {
@@ -43,6 +65,8 @@ module.exports = {
                 id: chat.id
             }
 
+            ResponseService.success(res, { call_id: chat.id });
+
 			let socketIds = await UserMappingService.getSocketId(userRecvId);
 			if (socketIds && socketIds.length > 0) {
 				socketIds.forEach((sckId) => {
@@ -50,13 +74,15 @@ module.exports = {
 				});
 			} else {
 				await VideoCallService.cancelCall(userRecvId, userSendId, chat.id);
-                return ResponseService.success(res);
+                return;
 			}
+
+
 
             // ResponseService.success(res);
 			await VideoCallService.missedCall(chat.id);
 
-			return ResponseService.success(res);
+			
 		} catch (error) {
 			console.log("Error-CallController@call: ", error);
 			// return ResponseService.error(res);

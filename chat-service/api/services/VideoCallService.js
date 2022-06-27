@@ -6,7 +6,7 @@ module.exports = {
 
             let message = await PrivateChat.findOne({ id: msg_id })
 
-            if (message.message == 'Missed Call' || message.message == 'In a call') {
+            if (message.message == 'Missed Call' || message.message == 'In a call' || message.message == 'Call Ended') {
                 return;
             }
 
@@ -45,8 +45,8 @@ module.exports = {
 
 			// Public to chat exchange w/o routing key
 			await Promise.all([
-				await QueueService.publish(userRecvId, new Buffer(qmsg)),
-				await QueueService.publish(userSendId, new Buffer(qmsg)),
+				QueueService.publish(userRecvId, new Buffer(qmsg)),
+				QueueService.publish(userSendId, new Buffer(qmsg)),
 			]);
 
         } catch (error) {

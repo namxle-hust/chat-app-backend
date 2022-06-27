@@ -44,6 +44,10 @@
   flex-direction: column; */
 }
 
+.messaging {
+    margin-top: 35px
+}
+
 .videos__myself {
     height: 100%;
     /* flex-grow: 1; */
@@ -52,6 +56,7 @@
     justify-content: center;
     align-items: center;
   }
+
 
 .videos__group {
   flex-grow: 1;
@@ -73,11 +78,13 @@
     width: 100% !important;
 }
 
+
 video {
   height: 100%;
   /* border-radius: 1rem;
   margin: 0.5rem; */
   width: auto;
+  border-radius: 10px;
   object-fit: cover;
   transform: rotateY(180deg);
   -webkit-transform: rotateY(180deg);
@@ -88,34 +95,104 @@ video {
   padding: 1rem;
   display: flex;
   position: absolute;
+  left: 378px;
   bottom: 0;
   /* background-color: var(--main-darklg); */
 }
 
+#message {
+    /* display: flex;
+    justify-content: center;
+    align-items: center;
+    /* height: 100%; */
+    position: absolute;
+    text-align: center;
+    left: 0;
+    right: 0;
+    top: 260px;
+    color: #fff;
+}
+
+
+#endMessage {
+    display: none;
+}
+
+#missedMessage {
+    display: none;
+}
+
+
+
+.options-end {
+    padding: 1rem;
+    display: flex;
+    position: absolute;
+    left: 440px;
+    bottom: 0;
+    /* background-color: var(--main-darklg); */
+  }
+
 .options__left {
   display: flex;
+}
+
+#hangUp {
+    color: #f6484a;
+    cursor: pointer;
+}
+
+#hangUp i {
+    -webkit-transform: rotate(227deg);
+    -moz-transform: rotate(227deg);
+    -ms-transform: rotate(227deg);
+    -o-transform: rotate(227deg);
+    transform: rotate(227deg);
+}
+
+#hangUp {
+    background-color: #f6484a;
+    color: #fff;
+    border-radius: 50%;
 }
 
 .options__right {
   margin-left: auto;
 }
 
-#stopVideo:hover, #muteButton:hover {
-    background-color: var(--primary-color);
+#end {
+    display: none;
+}
+
+#stopVideo:hover, #muteButton:hover, #hangUp:hover {
     cursor: pointer;
 }
 
+#stopVideo, #muteButton, #quitWindow {
+    cursor: pointer;
+    background-color: #3e3b3b;
+    color: #fff;
+    border-radius: 50%;
+}
+
+.options__button i {
+    font-size: 15px;
+}
+
+.options__button i.fa-times {
+    font-size: 19px;
+}
 
 .options__button {
   display: flex;
   justify-content: center;
   align-items: center;
   /* background-color: var(--primary-color); */
-  height: 50px;
+  height: 44px;
   border-radius: 5px;
   color: var(--main-light);
   font-size: 1.2rem;
-  width: 50px;
+  width: 44px;
   margin: 0 0.5rem;
 }
 

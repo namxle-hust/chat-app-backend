@@ -36,6 +36,8 @@ module.exports.routes = {
 
     '/answer-call': 'CallController.answer',
 
-    '/finish-call': 'CallController.finishCall'
+    '/finish-call': 'CallController.finishCall',
+
+    '/get-user-information': 'CallController.getUserInformation'
 
 };

@@ -1,6 +1,10 @@
 var callStatus = "calling";
 
 window.onbeforeunload = function (e) {
+    if (callStatus == 'closed') {
+        return;
+    }
+ 
 	var e = e || window.event;
 
 	//IE & Firefox
@@ -23,6 +27,7 @@ const videoGrid = document.getElementById("video-self");
 const videoPartner = document.getElementById("video-partner");
 const myVideo = document.createElement("video");
 const myVideo2 = document.createElement("video");
+
 const showChat = document.querySelector("#showChat");
 const backBtn = document.querySelector(".header__back");
 const endButton = document.querySelector("#end");
@@ -33,8 +38,7 @@ const callingMessage = document.querySelector("#callingMessage");
 const endMessage = document.querySelector("#endMessage");
 const missedMessage = document.querySelector("#missedMessage");
 
-myVideo.muted = false;
-myVideo2.muted = false;
+myVideo.muted = true;
 
 let currentCall;
 let userName;
@@ -59,7 +63,7 @@ io.sails.query = `token=${user_token}`;
 
 let callMessageId;
 
-if (call_id) {
+if (call_id && call_id != "null") {
     callMessageId = call_id;
 }
 
@@ -76,6 +80,7 @@ const connectToNewUser = (userId, stream) => {
 	currentCall = call;
 	callStatus = "in a call";
 	call.on("stream", (userVideoStream) => {
+
 		addVideoStream2(myVideo2, userVideoStream);
 	});
 };
@@ -165,7 +170,8 @@ let getUserInformation = async () => {
 };
 
 io.socket.on("getMessage", function (res) {
-    console.log(res);
+    console.log("arrival message: ", res);
+    console.log(callMessageId);
     if (res.message_type == "call" && callMessageId == res.id ) {
         console.log("arrival message !: ", res);
         if (res.message == "Missed Call") {

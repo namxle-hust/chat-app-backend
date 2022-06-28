@@ -77,8 +77,6 @@ module.exports = {
                 return;
 			}
 
-
-
             // ResponseService.success(res);
 			await VideoCallService.missedCall(chat.id);
 
@@ -109,10 +107,10 @@ module.exports = {
 
 			await VideoCallService.cancelCall(message.user_recv_id, userSendId, msgId);
 
-			// return ResponseService.success(res);
+			return ResponseService.success(res);
 		} catch (error) {
 			console.log("Error-CallController@cancelCall: ", error);
-			// return ResponseService.error(res);
+			return ResponseService.error(res);
 		}
 	},
 
@@ -194,7 +192,7 @@ module.exports = {
 			} else {
 				// The call have been rejected
 
-				await VideoCallService.cancelCall(userRecvId, req.user.id, msgId);
+				await VideoCallService.cancelCall(req.user.id, userRecvId, msgId);
 
 			}
 			return ResponseService.success(res);

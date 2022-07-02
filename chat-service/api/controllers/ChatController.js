@@ -65,12 +65,54 @@ module.exports = {
                 id: messageCreated.id
             })
 
-            await GroupService.send(qmsg, groupRecvId);
+            await GroupService.send(qmsg, groupRecvId, userSendId);
 
             return ResponseService.success(res);
         
         } catch (error) {
             console.log('Error-ChatController@sendGroup: ', error);
+            return ResponseService.error(res);
+        }
+    },
+
+    updateGroupMessage: async (req, res) => {
+        try {
+            if (!req.isSocket) {
+                return req.badRequest();
+            }
+
+            let messageId = req.body.id;
+            let status = req.body.status;
+            let message_time = new Date();
+            let userRecvId = req.body.user_sent_id;
+
+            if (status == 'delivered') {
+                let message = await GroupChat.findOne({ id: messageId });
+
+                if (message.status == 'delivered') {
+                    return ResponseService.success(res);
+                }
+
+                let quemsg = {
+                    status: 'delivered',
+                    id: messageId,
+                    is_group: true,
+                    message_time: message_time
+                }
+
+                quemsg = JSON.stringify(quemsg);
+
+                await QueueService.publishUpdateMessage(userRecvId ,new Buffer(quemsg));
+
+                ResponseService.success(res);
+
+                await PrivateChat.update({ id: messageId }, { status: status });
+                
+
+            }
+
+        } catch (error) {
+            console.log('Error-ChatController@updateGroupMessage: ', error);
             return ResponseService.error(res);
         }
     },

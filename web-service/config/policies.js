@@ -27,5 +27,9 @@ module.exports.policies = {
 
     ChatController: {
         '*': ['auth']
+    },
+
+    GroupController: {
+        '*': ['auth']
     }
 };

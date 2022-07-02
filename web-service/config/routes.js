@@ -35,4 +35,16 @@ module.exports.routes = {
     
     '/test': 'TestController.test',
 
+    '/upload-user-image': 'UsersController.uploadUserImage',
+
+    // Group Controller
+
+    'POST /group/create': 'GroupController.createGroup',
+
+    'POST /group/add-user': 'GroupController.addUserToGroup',
+
+    'GET /group/all-user/:group_id': 'GroupController.getAllUserWithinAGroup',
+    
+    'POST /group/remove-user': 'GroupController.removeUserFromGroup'
+
 };

@@ -19,6 +19,33 @@ module.exports = {
         }
     },
 
+    uploadUserImage: async (req, res) => {
+        try {
+            req.file("image").upload(
+				{
+					dirname: require("path").resolve(
+						sails.config.appPath,
+						"assets/public/users"
+					),
+				},
+				function (err, uploadedFiles) {
+					if (err) return ResponseService.error(res);
+
+                    let file = uploadedFiles[0];
+
+                    file.fd = file.fd.split('/home/ubuntu/service/assets/')[1]
+
+					return ResponseService.success(res, {
+                        file_path: file
+                    })
+				}
+			);
+        } catch (error) {
+            console.log("Error-ChatController@upload: ", error);
+			return ResponseService.error(res);
+        }
+    },
+    
     getUser: async (req, res) => {
         try {
 

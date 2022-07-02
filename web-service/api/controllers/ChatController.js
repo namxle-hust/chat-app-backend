@@ -67,16 +67,44 @@ module.exports = {
             `;
 
 			let queryStrGroupChat = `
+
                 SELECT 
-                    g.group_id as conversation_id,
-                    (SELECT g1.name FROM \`groups\` as g1 WHERE g1.id = g.group_id) as conversation_name,
-                    g.message as last_message,
-                    g.message_time as message_time,
-                    (SELECT 1) as is_group
-                FROM group_chat as g
-                WHERE g.user_id = ${user.id}
-                ORDER BY g.message_time
-                LIMIT 1
+                    gm.group_id as conversation_id,
+                    (SELECT g1.name FROM \`groups\` as g1 WHERE g1.id = gm.group_id) as conversation_name,
+                    (SELECT 1) as is_group,
+                    (
+                        SELECT 
+                            g.message as last_message
+                        FROM group_chat as g
+                        WHERE g.group_id = gm.group_id
+                        ORDER BY g.message_time DESC
+                        LIMIT 1
+                    ) as last_message,
+                    (
+                        SELECT 
+                            g.message_time as message_time
+                        FROM group_chat as g
+                        WHERE g.group_id = gm.group_id
+                        ORDER BY g.message_time DESC
+                        LIMIT 1
+                    ) as message_time,
+                    (
+                        SELECT 
+                            g.id as last_message_id
+                        FROM group_chat as g
+                        WHERE g.group_id = gm.group_id
+                        ORDER BY g.message_time DESC
+                        LIMIT 1
+                    ) as last_message_id,
+                    (
+                        SELECT 
+                            g.user_id as last_message_owner_id
+                        FROM group_chat as g
+                        WHERE g.group_id = gm.group_id
+                        ORDER BY g.message_time DESC
+                        LIMIT 1
+                    ) as last_message_owner_id
+                FROM group_memberships as gm WHERE gm.user_id = ${user.id}
                 `;
 
 			let result = await Promise.all([

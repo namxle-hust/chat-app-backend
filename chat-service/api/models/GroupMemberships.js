@@ -6,13 +6,25 @@
  */
 
 module.exports = {
-    primaryKey: "id",
+	primaryKey: "id",
+	tableName: "group_memberships",
 	attributes: {
 		group_id: {
-			type: "number"
+			type: "number",
 		},
 		user_id: {
-			type: "number"
+			type: "number",
 		},
+		group_call_status: {
+			type: "string",
+			allowNull: true,
+		},
+	},
+
+	GROUP_CALL_STATUSES: {
+        CALLING: 'calling',
+		IN_A_CALL: "in a call",
+		MISSED_CALL: "missed call",
+		NORMAL: "normal",
 	},
 };

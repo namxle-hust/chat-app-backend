@@ -32,9 +32,9 @@ module.exports = {
 
     sendGroup: async (req, res) => {
         try {
-            if (!req.isSocket) {
-                return req.badRequest();
-            }
+            // if (!req.isSocket) {
+            //     return req.badRequest();
+            // }
 
             let data = req.body
 

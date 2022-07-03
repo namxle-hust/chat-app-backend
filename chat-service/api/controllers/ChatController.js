@@ -54,8 +54,7 @@ module.exports = {
             }
             let messageCreated = await GroupChat.create(msg).fetch();
 
-            // Message for queue
-            let qmsg = JSON.stringify({
+            let resMessage = {
                 group_id: groupRecvId,
                 user_id: userSendId,
                 message: message,
@@ -63,11 +62,14 @@ module.exports = {
                 message_time: msgTime,
                 is_group: true,
                 id: messageCreated.id
-            })
+            }
 
-            await GroupService.send(qmsg, groupRecvId, userSendId);
+            // Message for queue
+            let qmsg = JSON.stringify(resMessage)
 
-            return ResponseService.success(res);
+            await GroupService.send(qmsg, groupRecvId, userSendId, true);
+
+            return ResponseService.success(res, resMessage);
         
         } catch (error) {
             console.log('Error-ChatController@sendGroup: ', error);

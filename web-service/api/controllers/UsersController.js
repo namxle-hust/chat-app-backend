@@ -5,6 +5,8 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 
+ const bcrypt = require("bcrypt");
+
 module.exports = {
     getAll: async (req, res) => {
         try {
@@ -15,6 +17,55 @@ module.exports = {
 
         } catch (error) {
             console.log('Error-UsersController@getAll: ', error);
+            return ResponseService.error(res);
+        }
+    },
+
+    updateUserInformation: async (req, res) => {
+        try {
+            let userName = req.body.user_name;
+            let password = req.body.password;
+            let email = req.body.emai;
+            let avatarUrl = req.body.avatar_url;
+            let userId = req.user.id;
+
+            let data = {}
+
+            let isUpdating = false;
+
+            if (email) {
+                let user = await Users.find({ email: email });
+                if (user) {
+                    return ResponseService.error(res, 'Email already existed!');
+                }
+                data.email = email;
+                isUpdating = true;
+            }
+
+            if (userName) {
+                data.user_name = user_name;
+                isUpdating = true;
+            }
+
+            if (password) {
+                data.password = bcrypt.hashSync(password, 10);
+                isUpdating = true;
+            }
+
+            if (avatarUrl) {
+                data.profile_pic_url = avatarUrl;
+                isUpdating = true;
+            }
+
+            if (isUpdating) {
+                await Users.update({ id: userId }, data);
+            }
+
+            return ResponseService.success(res);
+
+
+        } catch (error) {
+            console.log('Error-UsersController@updateUserInformation: ', error);
             return ResponseService.error(res);
         }
     },

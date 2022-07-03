@@ -64,12 +64,29 @@ module.exports = {
                 id: messageCreated.id
             }
 
+            ResponseService.success(res, resMessage);
+
+            let quemsg = {
+                status: 'sent',
+                id: messageCreated.id,
+                is_group: true,
+                group_id: messageCreated.group_id,
+                message_time: msgTime
+            }
+
+            let socketIds = await UserMappingService.getSocketId(userSendId);
+
+            if (socketIds && socketIds.length > 0) {
+                socketIds.forEach(sckId => {
+                    sails.sockets.broadcast(sckId, 'updateGroupMessage', quemsg);
+                })
+            }
+
             // Message for queue
             let qmsg = JSON.stringify(resMessage)
 
             await GroupService.send(qmsg, groupRecvId, userSendId, true);
 
-            return ResponseService.success(res, resMessage);
         
         } catch (error) {
             console.log('Error-ChatController@sendGroup: ', error);
@@ -99,6 +116,7 @@ module.exports = {
                     status: 'delivered',
                     id: messageId,
                     is_group: true,
+                    group_id: message.group_id,
                     message_time: message_time
                 }
 

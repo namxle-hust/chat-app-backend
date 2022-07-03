@@ -182,6 +182,7 @@ module.exports = {
 				chats: messages,
 				conversationName: partner.user_name,
 				conversationImg: partner.profile_pic_url,
+                conversationLastOnlineTime: partner.last_online_time
 			};
 
 			return ResponseService.success(res, data);

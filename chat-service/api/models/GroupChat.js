@@ -24,6 +24,13 @@ module.exports = {
         message_time: {
             type: 'ref',
             columnType: "timestamp"
-        }
+        },
+        msg_time_total: {
+            type: 'number'
+        },
+        status: {
+            type: 'string',
+            allowNull: true
+        },
 	},
 };

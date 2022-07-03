@@ -27,6 +27,15 @@ module.exports = {
                     LIMIT 1
                 ) as last_message,
                 (
+                    SELECT message_type FROM private_chat as p1 
+                    WHERE 
+                        (user_recv_id = ${user.id} AND user_sent_id = a.user_id)
+                    OR
+                        (user_sent_id = ${user.id} AND user_recv_id = a.user_id)
+                    ORDER BY p1.message_time DESC
+                    LIMIT 1
+                ) as message_type,
+                (
                     SELECT message_time FROM private_chat as p1 
                     WHERE 
                         (user_recv_id = ${user.id} AND user_sent_id = a.user_id)
@@ -88,6 +97,14 @@ module.exports = {
                         ORDER BY g.message_time DESC
                         LIMIT 1
                     ) as message_time,
+                    (
+                        SELECT 
+                            g.message_type as message_type
+                        FROM group_chat as g
+                        WHERE g.group_id = gm.group_id
+                        ORDER BY g.message_time DESC
+                        LIMIT 1
+                    ) as message_type,
                     (
                         SELECT 
                             g.id as last_message_id

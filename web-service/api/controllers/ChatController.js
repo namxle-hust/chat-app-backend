@@ -183,7 +183,7 @@ module.exports = {
 
             let members = await GroupMemberships.find({ group_id: groupId });
 
-            memebers = members.map(member => member.user_id);
+            members = members.map(member => member.user_id);
 
 			let messsages = await GroupChat.find()
 				.where({
@@ -195,7 +195,7 @@ module.exports = {
 				chats: messsages,
 				conversationName: group.name,
 				conversationImg: null,
-                memebers: memebers
+                members: members
 			};
 
 			return ResponseService.success(res, data);

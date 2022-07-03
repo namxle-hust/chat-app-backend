@@ -183,7 +183,7 @@ module.exports = {
 
             let members = await GroupMemberships.find({ group_id: groupId });
 
-            memebers = members.map(member => memeber.user_id);
+            memebers = members.map(member => member.user_id);
 
 			let messsages = await GroupChat.find()
 				.where({

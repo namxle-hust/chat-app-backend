@@ -37,6 +37,8 @@ module.exports.routes = {
 
     '/upload-user-image': 'UsersController.uploadUserImage',
 
+    'POST /update-user-information': 'UsersController.updateUserInformation',
+
     // Group Controller
 
     'POST /group/create': 'GroupController.createGroup',

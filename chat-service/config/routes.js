@@ -27,6 +27,7 @@ module.exports.routes = {
     '/send-group': 'ChatController.sendGroup',
 
     '/update-message': 'ChatController.updateMessage',
+    '/update-group-message': 'ChatController.updateGroupMessage',
 
 
     // Call service

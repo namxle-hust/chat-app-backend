@@ -50,7 +50,8 @@ module.exports = {
                 group_id: groupRecvId,
                 message_type: msgType,
                 message: message,
-                message_time: msgTime
+                message_time: msgTime,
+                status: 'sent',
             }
             let messageCreated = await GroupChat.create(msg).fetch();
 
@@ -74,13 +75,7 @@ module.exports = {
                 message_time: msgTime
             }
 
-            let socketIds = await UserMappingService.getSocketId(userSendId);
-
-            if (socketIds && socketIds.length > 0) {
-                socketIds.forEach(sckId => {
-                    sails.sockets.broadcast(sckId, 'updateGroupMessage', quemsg);
-                })
-            }
+            await QueueService.publishUpdateMessage(message.user_id ,new Buffer(JSON.stringify(quemsg)));
 
             // Message for queue
             let qmsg = JSON.stringify(resMessage)
@@ -103,7 +98,6 @@ module.exports = {
             let messageId = req.body.id;
             let status = req.body.status;
             let message_time = new Date();
-            let userRecvId = req.body.user_sent_id;
 
             if (status == 'delivered') {
                 let message = await GroupChat.findOne({ id: messageId });
@@ -122,12 +116,11 @@ module.exports = {
 
                 quemsg = JSON.stringify(quemsg);
 
-                await QueueService.publishUpdateMessage(userRecvId ,new Buffer(quemsg));
+                await QueueService.publishUpdateMessage(message.user_id ,new Buffer(quemsg));
 
                 ResponseService.success(res);
 
-                await PrivateChat.update({ id: messageId }, { status: status });
-                
+                await GroupChat.update({ id: messageId }, { status: status });
 
             }
 

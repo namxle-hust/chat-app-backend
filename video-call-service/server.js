@@ -17,8 +17,13 @@ app.use(express.static("public"));
 app.get("/:user_token/:user_id/:status/:call_id", (req, res) => {
 	res.render("call", { user_token: req.params.user_token, user_id: req.params.user_id, status: req.params.status, call_id: req.params.call_id });
 });
-app.get("/test/:user_token/:user_id/:status/:call_id", (req, res) => {
-	res.render("test", { user_token: req.params.user_token, user_id: req.params.user_id, status: req.params.status, call_id: req.params.call_id });
+
+app.get("/group/:user_token/:group_id/:status/:call_id", (req, res) => {
+	res.render("room", { user_token: req.params.user_token, group_id: req.params.group_id, status: req.params.status, call_id: req.params.call_id });
+});
+
+app.get("/test/:user_token/:group_id/:status/:call_id", (req, res) => {
+	res.render("test", { user_token: req.params.user_token, group_id: req.params.group_id, status: req.params.status, call_id: req.params.call_id });
 });
 
 server.listen(9090);

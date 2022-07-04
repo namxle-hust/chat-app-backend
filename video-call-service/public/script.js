@@ -299,11 +299,11 @@ muteButton.addEventListener("click", () => {
 });
 
 hangUpCall.addEventListener("click", () => {
-	// closeCall();
-	// if (currentCall) {
-	// 	currentCall.close();
-	// }
-	shareScreen();
+	closeCall();
+	if (currentCall) {
+		currentCall.close();
+	}
+	// shareScreen();
 });
 
 endButton.addEventListener("click", () => {

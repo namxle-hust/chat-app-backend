@@ -17,7 +17,8 @@ module.exports = {
             let group = await Groups.findOne({ id: groupId });
 
             let data = {
-                group: group
+                group: group,
+                user: req.user
             }
             
             return ResponseService.success(res, data);
@@ -125,9 +126,12 @@ module.exports = {
             await GroupMemberships.update({ user_id: req.user.id, group_id: groupId }, { group_call_status: GroupMemberships.GROUP_CALL_STATUSES.NORMAL });
 
             let users = await GroupService.getInACallUsers(groupId);
+            
+            console.log(users);
 
             // The last person finish the call in 1v1 call
             if (!users || (users && users.length == 1)) {
+                console.log('Ended Call');
                 let msgTimeTotal = CommonService.dateDiff(chat.message_time);
 
                 let qmsg = JSON.stringify({
@@ -138,10 +142,11 @@ module.exports = {
                     message_time: new Date(),
                     msg_time_total: msgTimeTotal,
                     is_group: true,
+                    user_leave_id: req.user.id,
                     id: msgId
                 })
                
-                await GroupService.send(qmsg, groupId, userSendId);
+                await GroupService.send(qmsg, groupId, userSendId, true);
 
             } else {
                 let msg = {
@@ -150,6 +155,8 @@ module.exports = {
 						msg_id: msgId,
 					},
 				};
+                console.log('Leave call')
+                console.log(msg);
 
                 await GroupService.boardCastLeaveVideoCallMessage(msg, groupId)
             }
@@ -189,6 +196,7 @@ module.exports = {
 						user_sent_id: req.user.id,
 						peer_id: peerId,
 						msg_id: msgId,
+                        user_name: req.user.user_name
 					},
 				};
 

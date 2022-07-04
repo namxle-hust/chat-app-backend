@@ -39,6 +39,18 @@ module.exports.routes = {
 
     '/finish-call': 'CallController.finishCall',
 
-    '/get-user-information': 'CallController.getUserInformation'
+    '/get-user-information': 'CallController.getUserInformation',
+
+    // Group Call Controller
+    '/call-group': 'GroupCallController.call',
+    
+    '/cancel-group-call': 'GroupCallController.cancelGroupCall',
+
+    '/answer-group-call': 'GroupCallController.answer',
+
+    '/finish-group-call': 'GroupCallController.finishCall',
+
+    '/get-group-information': 'GroupCallController.getGroupInformation'
+
 
 };

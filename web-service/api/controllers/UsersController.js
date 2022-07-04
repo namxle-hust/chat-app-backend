@@ -33,6 +33,8 @@ module.exports = {
 
             let isUpdating = false;
 
+            console.log(req.body)
+
             if (email) {
                 let user = await Users.find({ email: email });
                 if (user) {
@@ -60,6 +62,8 @@ module.exports = {
             if (isUpdating) {
                 await Users.update({ id: userId }, data);
             }
+
+            console.log(data);
 
             return ResponseService.success(res);
 

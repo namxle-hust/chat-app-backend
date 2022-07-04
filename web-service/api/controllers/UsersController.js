@@ -33,11 +33,12 @@ module.exports = {
 
             let isUpdating = false;
 
+            console.log('Update user');
             console.log(req.body)
 
             if (email) {
-                let user = await Users.find({ email: email });
-                if (user) {
+                let user = await Users.findOne({ email: email });
+                if (user && user.id != userId) {
                     return ResponseService.error(res, 'Email already existed!');
                 }
                 data.email = email;
@@ -59,11 +60,14 @@ module.exports = {
                 isUpdating = true;
             }
 
+            let user;
+
             if (isUpdating) {
-                await Users.update({ id: userId }, data);
+                user = await Users.update({ id: userId }, data);
             }
 
             console.log(data);
+            console.log(user);
 
             return ResponseService.success(res);
 

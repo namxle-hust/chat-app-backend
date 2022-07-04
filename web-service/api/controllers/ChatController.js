@@ -54,6 +54,15 @@ module.exports = {
                     LIMIT 1
                 ) as last_message_id,
                 (
+                    SELECT status FROM private_chat as p1 
+                    WHERE 
+                        (user_recv_id = ${user.id} AND user_sent_id = a.user_id)
+                    OR
+                        (user_sent_id = ${user.id} AND user_recv_id = a.user_id)
+                    ORDER BY p1.message_time DESC
+                    LIMIT 1
+                ) as status,
+                (
                     SELECT user_sent_id FROM private_chat as p1 
                     WHERE 
                         (user_recv_id = ${user.id} AND user_sent_id = a.user_id)
@@ -120,7 +129,15 @@ module.exports = {
                         WHERE g.group_id = gm.group_id
                         ORDER BY g.message_time DESC
                         LIMIT 1
-                    ) as last_message_owner_id
+                    ) as last_message_owner_id,
+                    (
+                        SELECT 
+                            g.status as status
+                        FROM group_chat as g
+                        WHERE g.group_id = gm.group_id
+                        ORDER BY g.message_time DESC
+                        LIMIT 1
+                    ) as status
                 FROM group_memberships as gm WHERE gm.user_id = ${user.id}
                 `;
 
@@ -139,7 +156,13 @@ module.exports = {
 				// Turn your strings into dates, and then subtract them
 				// to get a value that is either negative, positive, or zero.
 				return new Date(b.message_time) - new Date(a.message_time);
-			});
+			}).map((chat) => {
+                if (chat.last_message_owner_id != req.user.id && chat.status != 'seen' && chat.is_group == 0 ) {
+                    chat.is_black = true;
+                } else {
+                    chat.is_black = false;
+                }
+            })
 
 			console.log(chats);
 
@@ -160,6 +183,8 @@ module.exports = {
 			if (!partner) {
 				return ResponseService.error(res, "Invalid user!");
 			}
+
+            await PrivateChat.update({ user_recv_id: req.user.id, user_sent_id: partnerId }, { status: 'seen' });
 
 			let messages = await PrivateChat.find()
 				.where({

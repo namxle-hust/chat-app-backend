@@ -29,6 +29,10 @@ module.exports = {
                 })
             }))
 
+            let d = { group_id: group.id, user_id: userId, message_type: 'string', message: 'Group Created', message_time: new Date() }
+
+            await GroupChat.create(d);
+
             return ResponseService.success(res, group);
 
         } catch (error) {

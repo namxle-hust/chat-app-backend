@@ -1,10 +1,10 @@
 var callStatus = "calling";
 
 window.onbeforeunload = function (e) {
-    if (callStatus == 'closed') {
-        return;
-    }
- 
+	if (callStatus == "closed") {
+		return;
+	}
+
 	var e = e || window.event;
 
 	//IE & Firefox
@@ -64,43 +64,192 @@ io.sails.query = `token=${user_token}`;
 let callMessageId;
 
 if (call_id && call_id != "null") {
-    callMessageId = call_id;
+	callMessageId = call_id;
 }
 
-let updateUserName = (name) => {
-	console.log(UserCallName);
-	for (var i = 0; i < UserCallName.length; ++i) {
-		UserCallName[i].textContent = name;
+
+io.socket.on("getMessage", function (res) {
+	console.log("arrival message: ", res);
+	console.log(callMessageId);
+	if (res.message_type == "call" && callMessageId == res.id) {
+		console.log("arrival message !: ", res);
+		if (res.message == "Missed Call") {
+			callStatus = "closed";
+			displayMessage("missed");
+		}
+		if (res.message == "Call Ended") {
+			callStatus = "closed";
+			displayMessage("ended");
+			myVideo2.remove();
+		}
 	}
-	console.log(UserCallName);
-};
+});
 
-const connectToNewUser = (userId, stream) => {
-	const call = peer.call(userId, stream);
-	currentCall = call;
+
+
+let myVideoStream;
+navigator.mediaDevices
+	.getUserMedia({
+		audio: true,
+		video: true,
+	})
+	.then((stream) => {
+        init();
+		myVideoStream = stream;
+		addVideoStream(myVideo, stream);
+		peer.on("call", (call) => {
+			displayMessage("none");
+			currentCall = call;
+			call.answer(stream);
+			call.on("stream", (userVideoStream) => {
+				addVideoStream2(myVideo2, userVideoStream);
+			});
+
+			currentCall = call;
+		});
+
+		io.socket.on("answerCall", (res) => {
+			let peerId = res.data.peer_id;
+			console.log(res);
+			connectToNewUser(peerId, stream);
+		});
+	});
+
+
+
+
+// backBtn.addEventListener("click", () => {
+// 	document.querySelector(".main__left").style.display = "flex";
+// 	document.querySelector(".main__left").style.flex = "1";
+// 	document.querySelector(".main__right").style.display = "none";
+// 	document.querySelector(".header__back").style.display = "none";
+// });
+
+
+function answer () {
+	console.log("Answering");
+	let data = {
+		response: "accept",
+		user_recv_id: user_id,
+		peer_id: peerId,
+		msg_id: call_id,
+	};
 	callStatus = "in a call";
-	call.on("stream", (userVideoStream) => {
-
-		addVideoStream2(myVideo2, userVideoStream);
+	io.socket.get("/answer-call", data, function (res) {
+		console.log(res);
 	});
 };
 
-let calling = async () => {
+function displayMessage(name) {
+	endMessage.style = "display: none !important";
+	callingMessage.style = "display: none !important";
+	missedMessage.style = "display: none !important";
+	if (name == "ended") {
+		endButton.style = "display: block !important";
+		listOptionsBtn.style = "display: none !important";
+		endMessage.style = "display: block !important";
+	} else if (name == "missed") {
+		endButton.style = "display: block !important";
+		listOptionsBtn.style = "display: none !important";
+		missedMessage.style = "display: block !important";
+	}
+};
+
+async function getUserInformation () {
 	try {
 		return await new Promise((resolve, reject) => {
-			console.log("Calling");
-			io.socket.get("/call", { recvId: user_id }, function (res) {
-				callMessageId = res.data.call_id;
-                resolve(callMessageId);
-				// if (res.status === 'success') setConnectSocketSuccess(true);
-			});
+			io.socket.get(
+				"/get-user-information",
+				{ user_id: user_id },
+				function (res) {
+					console.log(res);
+					updateUserName(res.data.user.user_name);
+					resolve(res.data.user);
+				}
+			);
 		});
 	} catch (error) {
 		throw error;
 	}
 };
 
-let closeCall = () => {
+
+function addVideoStream2(video, stream) {
+	video.srcObject = stream;
+	video.addEventListener("loadedmetadata", () => {
+		video.play();
+		videoPartner.append(video);
+	});
+}
+
+async function init() {
+	try {
+		userCall = await getUserInformation();
+
+		io.socket.get("/subscribe", function (res) {
+			// subscibe to socket server realtime
+			console.log(res);
+			if (res.status === "success") {
+				console.log("connect socket successfully !");
+				if (status == "answer") {
+					answer();
+				}
+			} else {
+				console.log("Socket error");
+			}
+		});
+
+		if (status == "calling") {
+			await calling();
+		}
+	} catch (error) {
+		console.log(error);
+	}
+};
+
+function addVideoStream(video, stream) {
+	video.srcObject = stream;
+	video.addEventListener("loadedmetadata", () => {
+		video.play();
+		videoGrid.append(video);
+	});
+}
+
+function updateUserName(name) {
+	console.log(UserCallName);
+	for (var i = 0; i < UserCallName.length; ++i) {
+		UserCallName[i].textContent = name;
+	}
+	console.log(UserCallName);
+}
+
+function connectToNewUser(userId, stream) {
+	const call = peer.call(userId, stream);
+	currentCall = call;
+	callStatus = "in a call";
+	call.on("stream", (userVideoStream) => {
+		console.log("connecting");
+		addVideoStream2(myVideo2, userVideoStream);
+	});
+}
+
+async function calling() {
+	try {
+		return await new Promise((resolve, reject) => {
+			console.log("Calling");
+			io.socket.get("/call", { recvId: user_id }, function (res) {
+				callMessageId = res.data.call_id;
+				resolve(callMessageId);
+				// if (res.status === 'success') setConnectSocketSuccess(true);
+			});
+		});
+	} catch (error) {
+		throw error;
+	}
+}
+
+
+function closeCall () {
 	console.log("Close");
 	if (callStatus == "in a call") {
 		callStatus = "closed";
@@ -123,147 +272,6 @@ let closeCall = () => {
 			}
 		);
 	}
-};
-
-let answer = () => {
-	console.log("Answering");
-	let data = {
-		response: "accept",
-		user_recv_id: user_id,
-		peer_id: peerId,
-		msg_id: call_id,
-	};
-	io.socket.get("/answer-call", data, function (res) {});
-};
-
-let displayMessage = (name) => {
-	endMessage.style = "display: none !important";
-	callingMessage.style = "display: none !important";
-	missedMessage.style = "display: none !important";
-	if (name == "ended") {
-		endButton.style = "display: block !important";
-		listOptionsBtn.style = "display: none !important";
-		endMessage.style = "display: block !important";
-	} else if (name == "missed") {
-		endButton.style = "display: block !important";
-		listOptionsBtn.style = "display: none !important";
-		missedMessage.style = "display: block !important";
-	}
-};
-
-let getUserInformation = async () => {
-	try {
-		return await new Promise((resolve, reject) => {
-			io.socket.get(
-				"/get-user-information",
-				{ user_id: user_id },
-				function (res) {
-					console.log(res);
-					updateUserName(res.data.user.user_name);
-					resolve(res.data.user);
-				}
-			);
-		});
-	} catch (error) {
-		throw error;
-	}
-};
-
-io.socket.on("getMessage", function (res) {
-    console.log("arrival message: ", res);
-    console.log(callMessageId);
-    if (res.message_type == "call" && callMessageId == res.id ) {
-        console.log("arrival message !: ", res);
-        if (res.message == "Missed Call") {
-            callStatus = "closed";
-            displayMessage("missed");
-        }
-        if (res.message == "Call Ended") {
-            callStatus = "closed";
-            displayMessage("ended");
-            myVideo2.remove();
-        }
-    }
-});
-
-
-
-
-let init = async () => {
-	try {
-		userCall = await getUserInformation();
-
-		if (status == "calling") {
-			await calling();
-		}
-
-		io.socket.get("/subscribe", function (res) {
-			// subscibe to socket server realtime
-			console.log(res);
-			if (res.status === "success") {
-				console.log("connect socket successfully !");
-				if (status == "answer") {
-					answer();
-				}
-			} else {
-				console.log("Socket error");
-			}
-		});
-	} catch (error) {
-		console.log(error);
-	}
-};
-
-init();
-
-// backBtn.addEventListener("click", () => {
-// 	document.querySelector(".main__left").style.display = "flex";
-// 	document.querySelector(".main__left").style.flex = "1";
-// 	document.querySelector(".main__right").style.display = "none";
-// 	document.querySelector(".header__back").style.display = "none";
-// });
-
-let myVideoStream;
-navigator.mediaDevices
-	.getUserMedia({
-		audio: true,
-		video: true,
-	})
-	.then((stream) => {
-		myVideoStream = stream;
-		addVideoStream(myVideo, stream);
-		peer.on("call", (call) => {
-			displayMessage("none");
-			currentCall = call;
-			callStatus = "in a call";
-			call.answer(stream);
-			call.on("stream", (userVideoStream) => {
-				addVideoStream2(myVideo2, userVideoStream);
-			});
-
-			currentCall = call;
-		});
-
-		io.socket.on("answerCall", (res) => {
-			let peerId = res.data.peer_id;
-			connectToNewUser(peerId, stream);
-		});
-	});
-
-const addVideoStream2 = (video, stream) => {
-	video.srcObject = stream;
-	video.addEventListener("loadedmetadata", () => {
-		video.play();
-		videoPartner.append(video);
-	});
-};
-
-const addVideoStream = (video, stream) => {
-	video.srcObject = stream;
-	video.addEventListener("loadedmetadata", () => {
-		video.play();
-		videoGrid.append(video);
-	});
 };
 
 let text = document.querySelector("#chat_message");
@@ -291,10 +299,11 @@ muteButton.addEventListener("click", () => {
 });
 
 hangUpCall.addEventListener("click", () => {
-	closeCall();
-	if (currentCall) {
-		currentCall.close();
-	}
+	// closeCall();
+	// if (currentCall) {
+	// 	currentCall.close();
+	// }
+	shareScreen();
 });
 
 endButton.addEventListener("click", () => {
@@ -315,6 +324,20 @@ stopVideo.addEventListener("click", () => {
 		stopVideo.innerHTML = html;
 	}
 });
+
+function shareScreen() {
+	navigator.mediaDevices.getDisplayMedia({ cursor: true }).then((stream) => {
+		const screenTrack = stream.getTracks()[0];
+		senders.current
+			.find((sender) => sender.track.kind == "video")
+			.replaceTrack(screenTrack);
+		screenTrack.onended = function () {
+			senders.current
+				.find((sender) => sender.track.kind == "video")
+				.replaceTrack(myVideoStream.current.getTracks()[1]);
+		};
+	});
+}
 
 // inviteButton.addEventListener("click", (e) => {
 // 	prompt(

@@ -62,6 +62,7 @@ module.exports = {
                 message_type: msgType,
                 message_time: msgTime,
                 msg_time_total: 0,
+                is_group: false,
                 id: chat.id
             }
 
@@ -70,6 +71,7 @@ module.exports = {
 			let socketIds = await UserMappingService.getSocketId(userRecvId);
 			if (socketIds && socketIds.length > 0) {
 				socketIds.forEach((sckId) => {
+                    console.log(qmsg)
 					sails.sockets.broadcast(sckId, "calling", qmsg);
 				});
 			} else {

@@ -17,6 +17,7 @@ module.exports = {
             
             req.socket.on('disconnect', async () => {
                 await UserMappingService.delete(req.user.id, req.socket.id);
+                await Users.update({ id: req.user.id }, { last_online_time: new Date() });
                 await Promise.all([QueueService.cancelConsumerTag(req.user.id), QueueService.cancelConsumerTagUpdateMessage(req.user.id)])
                 await ChatService.boardcastUser();
                 console.log('User disconnected');
@@ -75,7 +76,7 @@ module.exports = {
                 message_time: msgTime
             }
 
-            await QueueService.publishUpdateMessage(message.user_id ,new Buffer(JSON.stringify(quemsg)));
+            await QueueService.publishUpdateMessage(messageCreated.user_id ,new Buffer(JSON.stringify(quemsg)));
 
             // Message for queue
             let qmsg = JSON.stringify(resMessage)

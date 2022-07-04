@@ -23,9 +23,10 @@ function createPopupWin(pageURL, pageTitle, width, height) {
 // calling call_id = none
 
 let url =
-	`http://localhost:9090/${user_token}/${user_id}/${status}/${call_id}`;
+	`http://localhost:9090/group/${user_token}/${group_id}/${status}/${call_id}`;
     createPopupWin(url, "Video Call", "990", "650");
 
+    console.log(123);
     /**
      * calling:
      * user_id -> id thằng muốn gọi

@@ -25,7 +25,7 @@ module.exports = {
         try {
             let userName = req.body.user_name;
             let password = req.body.password;
-            let email = req.body.emai;
+            let email = req.body.email;
             let avatarUrl = req.body.avatar_url;
             let userId = req.user.id;
 

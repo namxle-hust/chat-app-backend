@@ -43,7 +43,7 @@ module.exports = {
             }
 
             if (userName) {
-                data.user_name = user_name;
+                data.user_name = userName;
                 isUpdating = true;
             }
 

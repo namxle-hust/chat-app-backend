@@ -145,6 +145,11 @@ module.exports = {
                     user_leave_id: req.user.id,
                     id: msgId
                 })
+
+                await GroupChat.update(
+					{ id: msgId },
+					{ msg_time_total: msgTimeTotal, message: "Call Ended" }
+				)
                
                 await GroupService.send(qmsg, groupId, userSendId, true);
 

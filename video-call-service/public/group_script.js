@@ -82,10 +82,6 @@ io.sails.url = "http://localhost:6002";
 io.sails.useCORSRouteToGetCookie = false;
 io.sails.query = `token=${user_token}`;
 
-getMessages();
-
-init();
-
 
 let myVideoStream;
 navigator.mediaDevices
@@ -94,6 +90,10 @@ navigator.mediaDevices
 		audio: true,
 	})
 	.then((stream) => {
+        getMessages();
+
+        init();
+
         myVideoStream = stream
 		addVideoStream(myVideo.video, stream, myVideo.div);
 

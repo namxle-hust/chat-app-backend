@@ -113,9 +113,8 @@ Create a real-time chat application backend with 7 services
  $ cp chat-app-backend/docker-compose/docker-compose.yml .
 ```
 
-<!--
+```
 Note: After moving docker-compose file. The directory tree will be like this:
--->
 
     .
     ├── chat-app-backend            
@@ -127,7 +126,16 @@ Note: After moving docker-compose file. The directory tree will be like this:
         └── README.md
     ├── chat-app-frontend           
     └── docker-compose.yml          
+```
 
+#### 4. Run
+
+```
+ $ docker-compose up -d
+```
+- After running the command above, you should check if all the container is running properly in Docker Desktop
+
+<img width="984" alt="image" src="https://user-images.githubusercontent.com/103374580/177466564-226abd77-9a3e-47d5-ab08-6d51c9857da9.png">
 
 
 

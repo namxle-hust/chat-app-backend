@@ -4,6 +4,7 @@
 
 ## Documentation
 * [Introduction](#introduction)
+  - [Features] (#features)
 * [Detail](#detail)
   - [Technology Stack](#i-technology-stack)
   - [Services](#ii-services)
@@ -16,6 +17,21 @@ Project for IT4883Q.<br>
 This application is build by our teams with 6 members for course IT4883Q in HUST.<br>
 This application called: <b>Socical Chat</b> with some typical features of a regular chat app.
 
+### Features
+  1. Login, logout, register.
+  2. Private chat (send text, emoji, images).
+  3. Group chat (send text, emoji, images).
+  4. View your profile.
+  5. View other users's profile.
+  6. Update password, user name, email.
+  7. Show user status (online, offline).
+  8. View friend list.
+  9. View all conversations Private chat (1v1) and Group chat.
+  10. Video call for private chat and group chat.
+  11. Screen sharing for private chat & group chat.
+  12. Show message status (Sent or Delivered) for the owner of the message.
+  
+  
 
 ## Detail
 

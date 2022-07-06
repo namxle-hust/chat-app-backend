@@ -1,9 +1,25 @@
 # Social chat app backend
-Project for IT4883Q
+
+<br>
+
+## Documentation
+* [Introduction](#introduction)
+* [Detail](#detail)
+  - [Technology Stack](#i-technology-stack)
+  - [Services](#ii-services)
+  - [Architecture](#iii-architecture)
+  - [Service Detail](#iv-service-detail)
+* [Installation Guild](#installation-guide)
 
 ## Introduction:
+Project for IT4883Q.<br>
+This application is build by our teams with 6 members for course IT4883Q in HUST.<br>
+This application called: <b>Socical Chat</b> with some typical features of a regular chat app.
 
-### I. Technology stack
+
+## Detail
+
+### I. Technology Stack
 
   - [Sailsjs](https://sailsjs.com/)
   - [Redis](https://redis.io/)
@@ -90,16 +106,24 @@ Create a real-time chat application backend with 7 services
   
   - This service used for storing all the records of the application.
 
-### V. Implementation
 
-#### 1. Create Project Folder
+
+## Installation Guide
+
+### Prerequsite
+
+- You should have installed Docker & Docker Desktop
+- For [Windows](https://docs.docker.com/desktop/windows/install/)
+- For [MacOS](https://docs.docker.com/desktop/mac/install/)
+
+### 1. Create Project Folder
 
 ```
  $ mkdir chat-application
  
  $ cd chat-application
 ```
-#### 2. Cloning frontend & backend
+### 2. Cloning frontend & backend
 
 ```
  $ git clone https://github.com/namxle-hust/chat-app-backend.git
@@ -107,7 +131,7 @@ Create a real-time chat application backend with 7 services
  $ git clone https://github.com/namxle-hust/chat-app-frontend.git
 ```
 
-#### 3. Moving docker-compose file
+### 3. Moving docker-compose file
 
 ```
  $ cp chat-app-backend/docker-compose/docker-compose.yml .
@@ -128,14 +152,13 @@ Note: After moving docker-compose file. The directory tree will be like this:
     └── docker-compose.yml          
 ```
 
-#### 4. Run
+### 4. Run
 
 ```
  $ docker-compose up -d
 ```
-- After running the command above, you should check if all the container is running properly in Docker Desktop
+NOTE: After running the command above, you should check if all the container is running properly in Docker Desktop
 
-<img width="984" alt="image" src="https://user-images.githubusercontent.com/103374580/177466564-226abd77-9a3e-47d5-ab08-6d51c9857da9.png">
 
 
 

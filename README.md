@@ -2,6 +2,18 @@
 Project for IT4883Q
 
 ## Introduction:
+
+### Technology stack
+
+  - [Sailsjs](https://sailsjs.com/)
+  - [Redis](https://redis.io/)
+  - [Peerjs](https://peerjs.com/)
+  - [RabbitMQ](https://www.rabbitmq.com/)
+  - [Expressjs](https://expressjs.com/)
+  - [Mysql](https://www.mysql.com/)
+
+### Services
+
 Create a real-time chat application backend with 7 services
   - Web service
   - Chat service
@@ -9,6 +21,7 @@ Create a real-time chat application backend with 7 services
   - Session service
   - Queue Service
   - Video call service
+  - Database
   
 ### Architecture:
 
@@ -18,7 +31,7 @@ Create a real-time chat application backend with 7 services
 
 ### Service detail:
   #### 1.Web service
-  - This service build based on [Sailsjs](https://github.com/balderdashy/seed/blob/master/README.md) framework.
+  - This service build based on [Sailsjs](https://sailsjs.com/) framework.
   
   - This service does not need to use web-socket and it only receive normal http request.
   
@@ -34,7 +47,7 @@ Create a real-time chat application backend with 7 services
     
   
   #### 2.Chat service
-  - This service build based on [Sailsjs](https://github.com/balderdashy/seed/blob/master/README.md) framework.
+  - This service build based on [Sailsjs](https://sailsjs.com/) framework.
 
   - This service use only web-socket to communicate with clients & push socket message from one client to others.
     
@@ -46,7 +59,7 @@ Create a real-time chat application backend with 7 services
     - Send call/group call message
     - Update call/group call information
     
-  #### User mapping service
+  #### 3.User mapping service
   - This service build based on [Redis](https://redis.io/).
   
   - This service used for storing socket id of all user are online with purpose to get socket id based on user id
@@ -55,13 +68,24 @@ Create a real-time chat application backend with 7 services
   
     Key: "id:2" Value: "qCrkQAY1ZeKhUFQPAAAB" 
     
-  #### Session service
+  #### 4.Session service
   - This service build based on [Redis](https://redis.io/).
   
   - This service used for storing revoked jwt because this application use jwt to authenticate users.
   
-  #### Queue service
-  - This service build based on [RabbitMQ](https://www.rabbitmq.com/)
+  #### 5.Queue service
+  - This service build based on [RabbitMQ](https://www.rabbitmq.com/).
   
-  - This service used for queuing client messages and then publish to other designation client via web-socket
+  - This service used for queuing client messages and then publish to other designation client via web-socket.
+
+  #### 6.Video Call service
+  - This service build based on [ExpressJS](https://expressjs.com/).
+
+  - This service used for create peers between clients for transfering video stream & voice stream.
   
+  - Use [Peerjs](https://peerjs.com/) to create peers between clients.
+
+  #### 7.Database
+  - This service build based on [Mysql](https://www.mysql.com/).
+  
+  - This service used for storing all the records of the application.

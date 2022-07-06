@@ -43,36 +43,26 @@ services:
       - session-service
     networks:
       - chat-network
-  # video-call-service:
-  #   privileged: true
-  #   restart: always
-  #   tty: true
-  #   volumes:
-  #     - ./chat-app-backend/video-call-service:/home/ubuntu/service
-  #   image: namxle/chat-service:lastest
-  #   ports:
-  #     - "6003:1337"
-  #   environment:
-  #     - NODE_ENV=dev
-  #     - MODE=DEV
-  #     - RABBIT_MQ_ADDR=rabbitmq-service:5672
-  #     - MYSQL_HOST=database
-  #     - MYSQL_ROOT_PASSWORD=root
-  #     - USER_MAPPING_ADDR=user-mapping-service:6380
-  #     - REDIS_SESSION_ADDR=session-service:6382
-  #   # healthcheck:
-  #   #   test: ["CMD-SHELL", "curl -f localhost:1337/health 2>&1 | grep healthy"]
-  #   #   interval: 30s
-  #   #   timeout: 5s
-  #   #   retries: 5
-  #   container_name: backend-video-call-service-dev
-  #   networks:
-  #     - chat-network
-  #   depends_on:
-  #     - database
-  #     - user-mapping-service
-  #     - session-service
-  #     - rabbitmq-service
+  video-call-service:
+    privileged: true
+    restart: always
+    tty: true
+    volumes:
+      - ./chat-app-backend/video-call-service:/home/ubuntu/service
+    image: namxle/chat-service:lastest
+    ports:
+      - "9090:9090"
+    environment:
+      - NODE_ENV=dev
+      - MODE=DEV
+    # healthcheck:
+    #   test: ["CMD-SHELL", "curl -f localhost:1337/health 2>&1 | grep healthy"]
+    #   interval: 30s
+    #   timeout: 5s
+    #   retries: 5
+    container_name: backend-video-call-service-dev
+    networks:
+      - chat-network
   chat-service:
     privileged: true
     restart: always
@@ -81,7 +71,7 @@ services:
       - ./chat-app-backend/chat-service:/home/ubuntu/service
     image: namxle/chat-service:lastest
     ports:
-      - "6003:1337"
+      - "6002:1337"
     environment:
       - NODE_ENV=dev
       - MODE=DEV

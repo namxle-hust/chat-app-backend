@@ -13,61 +13,57 @@ module.exports = {
 		try {
 			let user = req.user;
 
+            let whereCond = `
+            WHERE 
+                (
+                    (user_recv_id = ${user.id} AND user_sent_id = a.user_id)
+                    OR
+                    (user_sent_id = ${user.id} AND user_recv_id = a.user_id)
+                )
+                AND (p1.message != "In a call")`
+
+            let groupChatWhereCond = `
+                WHERE g.group_id = gm.group_id
+                AND (g.message != "In a call")
+            `
+
 			let queryStrPrivateChat = `
             SELECT 
                 a.user_id,
                 (SELECT user_name FROM users WHERE id = a.user_id) as conversation_name,
                 (
                     SELECT message FROM private_chat as p1 
-                    WHERE 
-                        (user_recv_id = ${user.id} AND user_sent_id = a.user_id)
-                    OR
-                        (user_sent_id = ${user.id} AND user_recv_id = a.user_id)
+                    ${whereCond}
                     ORDER BY p1.message_time DESC
                     LIMIT 1
                 ) as last_message,
                 (
                     SELECT message_type FROM private_chat as p1 
-                    WHERE 
-                        (user_recv_id = ${user.id} AND user_sent_id = a.user_id)
-                    OR
-                        (user_sent_id = ${user.id} AND user_recv_id = a.user_id)
+                    ${whereCond}
                     ORDER BY p1.message_time DESC
                     LIMIT 1
                 ) as message_type,
                 (
                     SELECT message_time FROM private_chat as p1 
-                    WHERE 
-                        (user_recv_id = ${user.id} AND user_sent_id = a.user_id)
-                    OR
-                        (user_sent_id = ${user.id} AND user_recv_id = a.user_id)
+                    ${whereCond}
                     ORDER BY p1.message_time DESC
                     LIMIT 1
                 ) as message_time,
                 (
                     SELECT id FROM private_chat as p1 
-                    WHERE 
-                        (user_recv_id = ${user.id} AND user_sent_id = a.user_id)
-                    OR
-                        (user_sent_id = ${user.id} AND user_recv_id = a.user_id)
+                    ${whereCond}
                     ORDER BY p1.message_time DESC
                     LIMIT 1
                 ) as last_message_id,
                 (
                     SELECT status FROM private_chat as p1 
-                    WHERE 
-                        (user_recv_id = ${user.id} AND user_sent_id = a.user_id)
-                    OR
-                        (user_sent_id = ${user.id} AND user_recv_id = a.user_id)
+                    ${whereCond}
                     ORDER BY p1.message_time DESC
                     LIMIT 1
                 ) as status,
                 (
                     SELECT user_sent_id FROM private_chat as p1 
-                    WHERE 
-                        (user_recv_id = ${user.id} AND user_sent_id = a.user_id)
-                    OR
-                        (user_sent_id = ${user.id} AND user_recv_id = a.user_id)
+                    ${whereCond}
                     ORDER BY p1.message_time DESC
                     LIMIT 1
                 ) as last_message_owner_id,
@@ -94,7 +90,7 @@ module.exports = {
                         SELECT 
                             g.message as last_message
                         FROM group_chat as g
-                        WHERE g.group_id = gm.group_id
+                        ${groupChatWhereCond}
                         ORDER BY g.message_time DESC
                         LIMIT 1
                     ) as last_message,
@@ -102,7 +98,7 @@ module.exports = {
                         SELECT 
                             g.message_time as message_time
                         FROM group_chat as g
-                        WHERE g.group_id = gm.group_id
+                        ${groupChatWhereCond}
                         ORDER BY g.message_time DESC
                         LIMIT 1
                     ) as message_time,
@@ -110,7 +106,7 @@ module.exports = {
                         SELECT 
                             g.message_type as message_type
                         FROM group_chat as g
-                        WHERE g.group_id = gm.group_id
+                        ${groupChatWhereCond}
                         ORDER BY g.message_time DESC
                         LIMIT 1
                     ) as message_type,
@@ -118,7 +114,7 @@ module.exports = {
                         SELECT 
                             g.id as last_message_id
                         FROM group_chat as g
-                        WHERE g.group_id = gm.group_id
+                        ${groupChatWhereCond}
                         ORDER BY g.message_time DESC
                         LIMIT 1
                     ) as last_message_id,
@@ -126,7 +122,7 @@ module.exports = {
                         SELECT 
                             g.user_id as last_message_owner_id
                         FROM group_chat as g
-                        WHERE g.group_id = gm.group_id
+                        ${groupChatWhereCond}
                         ORDER BY g.message_time DESC
                         LIMIT 1
                     ) as last_message_owner_id,
@@ -134,7 +130,7 @@ module.exports = {
                         SELECT 
                             g.status as status
                         FROM group_chat as g
-                        WHERE g.group_id = gm.group_id
+                        ${groupChatWhereCond}
                         ORDER BY g.message_time DESC
                         LIMIT 1
                     ) as status

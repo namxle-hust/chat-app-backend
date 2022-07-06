@@ -282,8 +282,29 @@ const inviteButton = document.querySelector("#inviteButton");
 const muteButton = document.querySelector("#muteButton");
 const stopVideo = document.querySelector("#stopVideo");
 const hangUpCall = document.querySelector("#hangUp");
+const shareScreenBtn = document.querySelector("#shareScreen");
+const stopShareScreenBtn = document.querySelector('#stopShareScreen')
+
+var isSharingScreen = false;
+
+shareScreenBtn.addEventListener("click", () => {
+    isSharingScreen = true;
+    stopShareScreenBtn.style = "display: flex !important";
+    shareScreenBtn.style = "display: none !important";
+    shareScreen();
+})
+
+stopShareScreenBtn.addEventListener("click", () => {
+    isSharingScreen = false;
+
+    shareScreenBtn.style = "display: flex !important";
+	stopShareScreenBtn.style = "display: none !important";
+    stopShareScreen();
+})
+
 
 muteButton.addEventListener("click", () => {
+    // stopShareScreen();
 	const enabled = myVideoStream.getAudioTracks()[0].enabled;
 	if (enabled) {
 		myVideoStream.getAudioTracks()[0].enabled = false;
@@ -325,16 +346,30 @@ stopVideo.addEventListener("click", () => {
 	}
 });
 
+var currentScreeTrack;
+
+function stopShareScreen() {
+    myVideo.srcObject = myVideoStream;
+    for (let [key, value] of peer._connections.entries()) {
+        console.log(peer._connections.get(key)[0].peerConnection.getSenders())
+        peer._connections.get(key)[0].peerConnection.getSenders()[1].replaceTrack(myVideoStream.getTracks()[1])
+    }
+}
+
 function shareScreen() {
 	navigator.mediaDevices.getDisplayMedia({ cursor: true }).then((stream) => {
 		const screenTrack = stream.getTracks()[0];
-		senders.current
-			.find((sender) => sender.track.kind == "video")
-			.replaceTrack(screenTrack);
+        currentScreeTrack = stream
+        myVideo.srcObject = stream;
+        for (let [key, value] of peer._connections.entries()) {
+            peer._connections.get(key)[0].peerConnection.getSenders()[1].replaceTrack(screenTrack) ;
+        }
+
 		screenTrack.onended = function () {
-			senders.current
-				.find((sender) => sender.track.kind == "video")
-				.replaceTrack(myVideoStream.current.getTracks()[1]);
+            console.log(123);
+            for (let [key, value] of peer._connections.entries()) {
+                peer._connections.get(key)[0].peerConnection.getSenders()[1].replaceTrack(myVideoStream.getTracks()[1]); 
+            }
 		};
 	});
 }

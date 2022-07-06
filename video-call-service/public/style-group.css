@@ -75,7 +75,7 @@
 }
 
 .align-items-center {
-    align-items: center !important;
+    align-items: center;
 }
 
 .video-div-surround {
@@ -123,12 +123,35 @@ video {
   -moz-transform: rotateY(180deg);
 }
 
+.show-screen {
+    height: 100%;
+    width: auto;
+    position: absolute;
+}
+
+.show-screen .inner-name {
+    left: 80px !important;
+}
+
+.show-screen-partners {
+    position: absolute !important;
+    left: 0 !important;
+    align-items: unset !important;
+    z-index: 100000;
+}
+
+.show-screen-partners video {
+    height: 110px !important;
+}
+
 .options {
   padding: 1rem;
   display: flex;
   position: absolute;
   left: 378px;
   bottom: 0;
+  left: 350px;
+  z-index: 100000;
   /* background-color: var(--main-darklg); */
 }
 
@@ -162,6 +185,7 @@ video {
     position: absolute;
     left: 440px;
     bottom: 0;
+    z-index: 100000;
     /* background-color: var(--main-darklg); */
   }
 
@@ -196,11 +220,15 @@ video {
     display: none;
 }
 
-#stopVideo:hover, #muteButton:hover, #hangUp:hover {
+#stopShareScreen {
+    display: none;
+}
+
+#stopVideo:hover, #muteButton:hover, #hangUp:hover, #shareScreen:hover, #stopShareScreen:hover {
     cursor: pointer;
 }
 
-#stopVideo, #muteButton, #quitWindow {
+#stopVideo, #muteButton, #quitWindow, #shareScreen, #stopShareScreen  {
     cursor: pointer;
     background-color: #3e3b3b;
     color: #fff;

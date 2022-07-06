@@ -220,4 +220,48 @@ module.exports = {
 			// return ResponseService.error(res);
 		}
 	},
+
+
+    screenSharingNotify: async (req, res) => {
+        try {
+            let user = req.user;
+
+            let groupId = req.body.group_id;
+
+            let groupMemberShips = await GroupMemberships.find({
+				group_id: groupId,
+				group_call_status:
+					GroupMemberships.GROUP_CALL_STATUSES.IN_A_CALL,
+			});
+
+            let qmsg = {
+                user_share: user,
+                status: req.body.status
+            }
+
+            groupMemberShips.map(async (groupMember) => {
+                let userId = groupMember.user_id;
+
+                if (userId != req.user.id) {
+                    let socketIds = await UserMappingService.getSocketId(
+                        userId
+                    );
+                    if (socketIds && socketIds.length > 0) {
+                        socketIds.forEach((sckId) => {
+                            sails.sockets.broadcast(
+                                sckId,
+                                "screen_sharing",
+                                qmsg
+                            );
+                        });
+                    } else {
+                    }
+                }
+            })
+            return ResponseService.success(res);
+
+        } catch (error) {
+            console.log("Error-GroupCallController@screenSharingNotify: ", error);
+        }
+    }
 };

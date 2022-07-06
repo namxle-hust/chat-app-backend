@@ -95,7 +95,7 @@ video {
   padding: 1rem;
   display: flex;
   position: absolute;
-  left: 378px;
+  left: 350px;
   bottom: 0;
   /* background-color: var(--main-darklg); */
 }
@@ -119,6 +119,10 @@ video {
 }
 
 #missedMessage {
+    display: none;
+}
+
+#stopShareScreen {
     display: none;
 }
 
@@ -164,11 +168,11 @@ video {
     display: none;
 }
 
-#stopVideo:hover, #muteButton:hover, #hangUp:hover {
+#stopVideo:hover, #muteButton:hover, #hangUp:hover, #shareScreen:hover, #stopShareScreen:hover {
     cursor: pointer;
 }
 
-#stopVideo, #muteButton, #quitWindow {
+#stopVideo, #muteButton, #quitWindow, #shareScreen, #stopShareScreen {
     cursor: pointer;
     background-color: #3e3b3b;
     color: #fff;

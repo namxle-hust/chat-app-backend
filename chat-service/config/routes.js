@@ -50,7 +50,7 @@ module.exports.routes = {
 
     '/finish-group-call': 'GroupCallController.finishCall',
 
-    '/get-group-information': 'GroupCallController.getGroupInformation'
+    '/get-group-information': 'GroupCallController.getGroupInformation',
 
-
+    '/screen-sharing-notify': 'GroupCallController.screenSharingNotify'
 };

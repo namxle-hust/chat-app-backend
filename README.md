@@ -3,7 +3,7 @@ Project for IT4883Q
 
 ## Introduction:
 
-### Technology stack
+### I. Technology stack
 
   - [Sailsjs](https://sailsjs.com/)
   - [Redis](https://redis.io/)
@@ -12,7 +12,7 @@ Project for IT4883Q
   - [Expressjs](https://expressjs.com/)
   - [Mysql](https://www.mysql.com/)
 
-### Services
+### II. Services
 
 Create a real-time chat application backend with 7 services
   - Web service
@@ -23,14 +23,14 @@ Create a real-time chat application backend with 7 services
   - Video call service
   - Database
   
-### Architecture:
+### III. Architecture:
 
 
 ![image](https://user-images.githubusercontent.com/103374580/177462179-d9bf1e82-b52d-4ea0-80f5-58b75ead6e59.png)
 
 
-### Service detail:
-  #### 1.Web service
+### IV. Service detail:
+  #### 1. Web service
   - This service build based on [Sailsjs](https://sailsjs.com/) framework.
   
   - This service does not need to use web-socket and it only receive normal http request.
@@ -46,7 +46,7 @@ Create a real-time chat application backend with 7 services
     - Upload images.
     
   
-  #### 2.Chat service
+  #### 2. Chat service
   - This service build based on [Sailsjs](https://sailsjs.com/) framework.
 
   - This service use only web-socket to communicate with clients & push socket message from one client to others.
@@ -59,7 +59,7 @@ Create a real-time chat application backend with 7 services
     - Send call/group call message
     - Update call/group call information
     
-  #### 3.User mapping service
+  #### 3. User mapping service
   - This service build based on [Redis](https://redis.io/).
   
   - This service used for storing socket id of all user are online with purpose to get socket id based on user id
@@ -68,24 +68,67 @@ Create a real-time chat application backend with 7 services
   
     Key: "id:2" Value: "qCrkQAY1ZeKhUFQPAAAB" 
     
-  #### 4.Session service
+  #### 4. Session service
   - This service build based on [Redis](https://redis.io/).
   
   - This service used for storing revoked jwt because this application use jwt to authenticate users.
   
-  #### 5.Queue service
+  #### 5. Queue service
   - This service build based on [RabbitMQ](https://www.rabbitmq.com/).
   
   - This service used for queuing client messages and then publish to other designation client via web-socket.
 
-  #### 6.Video Call service
+  #### 6. Video Call service
   - This service build based on [ExpressJS](https://expressjs.com/).
 
   - This service used for create peers between clients for transfering video stream & voice stream.
   
   - Use [Peerjs](https://peerjs.com/) to create peers between clients.
 
-  #### 7.Database
+  #### 7. Database
   - This service build based on [Mysql](https://www.mysql.com/).
   
   - This service used for storing all the records of the application.
+
+### V. Implementation
+
+#### 1. Create Project Folder
+
+```
+ $ mkdir chat-application
+ 
+ $ cd chat-application
+```
+#### 2. Cloning frontend & backend
+
+```
+ $ git clone https://github.com/namxle-hust/chat-app-backend.git
+  
+ $ git clone https://github.com/namxle-hust/chat-app-frontend.git
+```
+
+#### 3. Moving docker-compose file
+
+```
+ $ cp chat-app-backend/docker-compose/docker-compose.yml .
+```
+
+<!--
+Note: After moving docker-compose file. The directory tree will be like this:
+-->
+
+    .
+    ├── chat-app-backend            
+        ├── chat-service            
+        ├── docker-compose          
+            ├── docker-compose.yml  
+        ├── video-call-service      
+        ├── web-service             
+        └── README.md
+    ├── chat-app-frontend           
+    └── docker-compose.yml          
+
+
+
+
+
